@@ -15,10 +15,12 @@ export const stub_getData = () => {
         nomer_ls: '0000000123',
         schetchiki: [
             {
+                id: '1',
                 title: 'ванная х/в',
                 cur_value: 100
             },
             {
+                id: '2',
                 title: 'ванная г/в',
                 cur_value: 85
             }

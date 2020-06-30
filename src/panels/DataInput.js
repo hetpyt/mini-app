@@ -2,10 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
 import PanelHeader from '@vkontakte/vkui/dist/components/PanelHeader/PanelHeader';
-import PanelHeaderButton from '@vkontakte/vkui/dist/components/PanelHeaderButton/PanelHeaderButton';
 import PanelHeaderBack from '@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack';
-import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
-import Icon24Back from '@vkontakte/icons/dist/24/back';
 import FormLayout from '@vkontakte/vkui/dist/components/FormLayout/FormLayout';
 import FormLayoutGroup from '@vkontakte/vkui/dist/components/FormLayoutGroup/FormLayoutGroup';
 import Div from '@vkontakte/vkui/dist/components/Div/Div';
@@ -23,16 +20,27 @@ const DataInput = props => (
 			Введите показания
 		</PanelHeader>
         <FormLayout>
-            <FormLayoutGroup top="Данные абонента" bottom="Проверьте данные прежде чем продолжить">
-                <Cell multiline>
-                    <InfoRow header="Код">{props.secretCode}</InfoRow>
+            <Group top="Данные абонента" bottom="Проверьте данные прежде чем продолжить">
+                <Cell>
+                    <Input top="Код" type="text" name="secret_code" value={props.secretCode} disabled />
+                </Cell>   
+                <Cell> 
+                    <Input type="text" top="Номер ЛС" name="nomer_ls" value={props.tenantData ? props.tenantData.nomer_ls : ''} disabled />
                 </Cell>
                 <Cell>
-                    <InfoRow header="Номер ЛС">{props.tenantData ? props.tenantData.nomer_ls : ''}</InfoRow>
+                    <Input type="text" top="ФИО" name="fio_" value={props.tenantData ? props.tenantData.fio.imya + ' ' + props.tenantData.fio.otchestvo + ' ' + props.tenantData.fio.familiya[0] + '.' : ''} disabled />
                 </Cell>
-            </FormLayoutGroup>
+                <Cell>
+                    <Input type="hidden" name="fio" value={props.tenantData ?  props.tenantData.fio.familiya + ' ' + props.tenantData.fio.imya + ' ' + props.tenantData.fio.otchestvo : ''} disabled />
+                </Cell>
+
+            </Group>
             <FormLayoutGroup top="Показания" bottom="Проверьте показания прежде чем продолжить">
-                <Input top="Счетчик 1" type="number" />
+                {props.tenantData ? props.tenantData.schetchiki.map(({ title, cur_value, id }) => (
+                    <Cell>
+                        <Input top={title} type="number" name={'counter_' + id} key={id}  />
+                    </Cell>
+                )) : <Div></Div>}
             </FormLayoutGroup>
             <Div>
                 <Button size="xl" mode="primary" onClick={props.go} data-to="persik">
@@ -40,14 +48,15 @@ const DataInput = props => (
                 </Button>
             </Div>
         </FormLayout>
+
 	</Panel>
 );
 
 DataInput.propTypes = {
 	id: PropTypes.string.isRequired,
 	go: PropTypes.func.isRequired,
-    secretCode: PropTypes.string.isRequired,
-    tenantData: PropTypes.object.isRequired,
+    secretCode: PropTypes.string,
+    tenantData: PropTypes.object,
 };
 
 export default DataInput;
