@@ -3,35 +3,32 @@ import PropTypes from 'prop-types';
 import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
 import PanelHeader from '@vkontakte/vkui/dist/components/PanelHeader/PanelHeader';
 import PanelHeaderBack from '@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack';
-import Button from '@vkontakte/vkui/dist/components/Button/Button';
+import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption';
 import Div from '@vkontakte/vkui/dist/components/Div/Div';
-import Input from '@vkontakte/vkui/dist/components/Input/Input';
-import persik from '../img/persik.png';
-import './Persik.css';
+import Button from '@vkontakte/vkui/dist/components/Button/Button';
 
-
-const Persik = props => (
-	<Panel id={props.id}>
+const ErrorCode = props => (
+    <Panel id={props.id}>
 		<PanelHeader
-			left={<PanelHeaderBack onClick={props.go} data-to="begin">
-				
-			</PanelHeaderBack>}
+			left={<PanelHeaderBack onClick={props.go} data-to="begin" />}
 		>
-			Спасибо
+			Ошибка
 		</PanelHeader>
-		<img className="Persik" src={persik} alt="Persik The Cat"/>
-		
-		<Div>
+        <Div>
+            <Caption level="1" weight="heavy" >Код не распознан</Caption>
+        </Div>
+        <Div>
 			<Button size="xl" mode="primary" onClick={props.go} data-to="begin">
 				В начало
 			</Button>
 		</Div>
+
 	</Panel>
 );
 
-Persik.propTypes = {
+ErrorCode.propTypes = {
 	id: PropTypes.string.isRequired,
 	go: PropTypes.func.isRequired,
 };
 
-export default Persik;
+export default ErrorCode;

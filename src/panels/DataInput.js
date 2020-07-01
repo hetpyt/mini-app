@@ -6,48 +6,51 @@ import PanelHeaderBack from '@vkontakte/vkui/dist/components/PanelHeaderBack/Pan
 import FormLayout from '@vkontakte/vkui/dist/components/FormLayout/FormLayout';
 import FormLayoutGroup from '@vkontakte/vkui/dist/components/FormLayoutGroup/FormLayoutGroup';
 import Div from '@vkontakte/vkui/dist/components/Div/Div';
-import Input from '@vkontakte/vkui/dist/components/Input/Input';
 import Button from '@vkontakte/vkui/dist/components/Button/Button';
 import Group from '@vkontakte/vkui/dist/components/Group/Group';
 import InfoRow from '@vkontakte/vkui/dist/components/InfoRow/InfoRow';
-import Cell from '@vkontakte/vkui/dist/components/Cell/Cell';
+import Cell from '@vkontakte/vkui/dist/components/SimpleCell/SimpleCell';
+import FormField from '@vkontakte/vkui/dist/components/FormField/FormField';
+import Input from '@vkontakte/vkui/dist/components/Input/Input';
 
 const DataInput = props => (
-	<Panel id={props.id}>
+    <Panel id={props.id}>
 		<PanelHeader
 			left={<PanelHeaderBack onClick={props.go} data-to="begin" />}
 		>
-			Введите показания
+			Ввод показаний
 		</PanelHeader>
+        {props.tenantData && props.secretCode && 
         <FormLayout>
             <Group top="Данные абонента" bottom="Проверьте данные прежде чем продолжить">
-                <Cell>
-                    <Input top="Код" type="text" name="secret_code" value={props.secretCode} disabled />
-                </Cell>   
-                <Cell> 
-                    <Input type="text" top="Номер ЛС" name="nomer_ls" value={props.tenantData ? props.tenantData.nomer_ls : ''} disabled />
-                </Cell>
-                <Cell>
-                    <Input type="text" top="ФИО" name="fio_" value={props.tenantData ? props.tenantData.fio.imya + ' ' + props.tenantData.fio.otchestvo + ' ' + props.tenantData.fio.familiya[0] + '.' : ''} disabled />
-                </Cell>
-                <Cell>
-                    <Input type="hidden" name="fio" value={props.tenantData ?  props.tenantData.fio.familiya + ' ' + props.tenantData.fio.imya + ' ' + props.tenantData.fio.otchestvo : ''} disabled />
-                </Cell>
+                <FormLayoutGroup>
+                    <Input type="text" top="Код" name="secret_code" value={props.secretCode} disabled />
+                </FormLayoutGroup>   
+                <FormLayoutGroup> 
+                    <Input type="text" top="Номер ЛС" name="nomer_ls" value={props.tenantData.nomer_ls} disabled />
+                </FormLayoutGroup>
+                <FormLayoutGroup>
+                    <Input type="text" top="ФИО" name="fio_" value={`${props.tenantData.fio.imya} ${props.tenantData.fio.otchestvo} ${props.tenantData.fio.familiya[0]}.`} disabled />
+                </FormLayoutGroup>
+                
+                    <Input type="hidden" name="fio" value={`${props.tenantData.fio.familiya} ${props.tenantData.fio.imya} ${props.tenantData.fio.otchestvo}`} disabled />
+               
 
             </Group>
-            <FormLayoutGroup top="Показания" bottom="Проверьте показания прежде чем продолжить">
-                {props.tenantData ? props.tenantData.schetchiki.map(({ title, cur_value, id }) => (
-                    <Cell>
-                        <Input top={title} type="number" name={'counter_' + id} key={id}  />
-                    </Cell>
-                )) : <Div></Div>}
-            </FormLayoutGroup>
+            <Group top="Показания" bottom="Проверьте показания прежде чем продолжить">
+                {props.tenantData.schetchiki.map(({ title, cur_value, id }) => (
+                        <FormLayoutGroup top={title} key={id}>
+                            <Input top="Текущие показания" type="number" name={'cur_counter_' + id} value={cur_value} disabled />
+                            <Input top="Новые показания" type="number" name={'new_counter_' + id} />
+                        </FormLayoutGroup>
+                ))}
+            </Group>
             <Div>
                 <Button size="xl" mode="primary" onClick={props.go} data-to="persik">
                     Отправить
                 </Button>
             </Div>
-        </FormLayout>
+        </FormLayout>}
 
 	</Panel>
 );

@@ -19,7 +19,7 @@ const Begin = ({ id, go, setSecretCode, vkUser }) => (
 				before={vkUser.photo_200 ? <Avatar src={vkUser.photo_200}/> : null}
 				description={vkUser.city && vkUser.city.title ? vkUser.city.title : ''}
 			>
-				{`${vkUser.first_name} ${vkUser.last_name} ({vkUser.id})`}
+				{`${vkUser.first_name} ${vkUser.last_name} ${vkUser.id}`}
 			</Cell>
 		</Group>}
 
