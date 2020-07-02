@@ -15,16 +15,14 @@ import Input from '@vkontakte/vkui/dist/components/Input/Input';
 
 const DataInput = props => (
     <Panel id={props.id}>
-		<PanelHeader
-			left={<PanelHeaderBack onClick={props.go} data-to="begin" />}
-		>
+		<PanelHeader left={<PanelHeaderBack onClick={props.go} data-to="begin" />} >
 			Ввод показаний
 		</PanelHeader>
         {props.tenantData && props.secretCode && 
         <FormLayout>
             <Group top="Данные абонента" bottom="Проверьте данные прежде чем продолжить">
-                <FormLayoutGroup>
-                    <Input type="text" top="Код" name="secret_code" value={props.secretCode} disabled />
+                <FormLayoutGroup top="Код">
+                    <Input type="text" top="Код" name="secret_code" value={props.secretCode} disabled ></Input>
                 </FormLayoutGroup>   
                 <FormLayoutGroup> 
                     <Input type="text" top="Номер ЛС" name="nomer_ls" value={props.tenantData.nomer_ls} disabled />
@@ -32,16 +30,13 @@ const DataInput = props => (
                 <FormLayoutGroup>
                     <Input type="text" top="ФИО" name="fio_" value={`${props.tenantData.fio.imya} ${props.tenantData.fio.otchestvo} ${props.tenantData.fio.familiya[0]}.`} disabled />
                 </FormLayoutGroup>
-                
                     <Input type="hidden" name="fio" value={`${props.tenantData.fio.familiya} ${props.tenantData.fio.imya} ${props.tenantData.fio.otchestvo}`} disabled />
-               
-
             </Group>
             <Group top="Показания" bottom="Проверьте показания прежде чем продолжить">
                 {props.tenantData.schetchiki.map(({ title, cur_value, id }) => (
                         <FormLayoutGroup top={title} key={id}>
-                            <Input top="Текущие показания" type="number" name={'cur_counter_' + id} value={cur_value} disabled />
-                            <Input top="Новые показания" type="number" name={'new_counter_' + id} />
+                            <Input top="Текущие показания" type="number" name={'cur-count_' + id} value={cur_value} disabled />
+                            <Input top="Новые показания" type="number" name={'new-count_' + id} />
                         </FormLayoutGroup>
                 ))}
             </Group>
@@ -50,8 +45,8 @@ const DataInput = props => (
                     Отправить
                 </Button>
             </Div>
-        </FormLayout>}
-
+        </FormLayout>
+        }
 	</Panel>
 );
 
@@ -60,6 +55,7 @@ DataInput.propTypes = {
 	go: PropTypes.func.isRequired,
     secretCode: PropTypes.string,
     tenantData: PropTypes.object,
+    vkuser: PropTypes.object,
 };
 
 export default DataInput;

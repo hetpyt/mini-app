@@ -24,18 +24,13 @@ const App = () => {
 				const schemeAttribute = document.createAttribute('scheme');
 				schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
 				document.body.attributes.setNamedItem(schemeAttribute);
-			} else if (type === 'VKWebAppGetPersonalCardFailed') {
-                //console.log(data);
-            }
-            
-		});
+			    } 
+            }   
+	    );
 		async function fetchVkUser() {
-			const user = await bridge.send('VKWebAppGetUserInfo');
-            //const contact_info = await bridge.send('VKWebAppGetPersonalCard');
-            //console.log(user);
-			setUser(user);
-            //setUserContacts(contact_info);
-			setPopout(null);
+            const user = await bridge.send('VKWebAppGetUserInfo')
+            setUser(user);
+            setPopout(null);
         }
         fetchVkUser();
 	}, []);
@@ -84,8 +79,8 @@ const App = () => {
 
 	return (
 		<View activePanel={activePanel} popout={popout}>
-			<Begin id='begin' fetchedUser={fetchedUser} setSecretCode={setSecretCode} go={go} />
-			<DataInput id='datainput' fetchedUser={fetchedUser} tenantData={tenantData} secretCode={secretCode} go={go} />
+			<Begin id='begin' vkUser={fetchedUser} setSecretCode={setSecretCode} go={go} />
+			<DataInput id='datainput' vkUser={fetchedUser} tenantData={tenantData} secretCode={secretCode} go={go} />
 			<ErrorCode id='errorcode' go={go} />
 			<Persik id='persik' go={go} />
 		</View>
