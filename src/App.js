@@ -16,6 +16,7 @@ const App = () => {
 	const [fetchedUser, setUser] = useState(null);
     const [secretCode, setSecretCode] = useState(null);
     const [tenantData, setTenantData] = useState(null);
+    const [formData, setFormData] = useState([]);
 	const [popout, setPopout] = useState(spinner);
 
 	useEffect(() => {
@@ -36,9 +37,11 @@ const App = () => {
 	}, []);
 
     useEffect(() => {
+        console.log('effect')
         if (activePanel === 'begin') {
-            setSecretCode(null);
+           setSecretCode(null);
             setTenantData(null);
+            setFormData([]);
         }
     }, [activePanel]);
 
@@ -47,40 +50,46 @@ const App = () => {
         const data = stub_getData(code);
         setTenantData(data);
         setPopout(null);
-        if (data === null) {
-            console.log('data=null');
-            setActivePanel('errorcode');
-            return true;
-        }
-        return false;
+        return (data !== null);
     }
 
+    function sendData() {
+        setPopout(spinner);
+        
+    }
+
+
 	const go = e => {
-        let panelSetted = false;
+        let targetPanel = e.currentTarget.dataset.to;
         switch (activePanel) {
             case 'begin':
                 console.log('from begin');
                 if ( !secretCode || /[^[0-9]/.test(secretCode) ) {
                     return;
                 }
-                panelSetted = fetchData(secretCode);
+                if (!fetchData(secretCode)) {
+                    targetPanel = 'errorcode';
+                }
                 console.log('tenantdata', tenantData);
                 break;
                 
-            case 'persik':
-                console.log('from persik');
+            case 'datainput':
+                console.log('from datainput');
+                if (e.currentTarget.dataset.action == "confirm") {
+                    console.log('formdata', formData);
+                }
                 break;
                 
             default:
                 break;
         };
-        if (!panelSetted) setActivePanel(e.currentTarget.dataset.to);
+        setActivePanel(targetPanel);
 	};
 
 	return (
 		<View activePanel={activePanel} popout={popout}>
 			<Begin id='begin' vkUser={fetchedUser} setSecretCode={setSecretCode} go={go} />
-			<DataInput id='datainput' vkUser={fetchedUser} tenantData={tenantData} secretCode={secretCode} go={go} />
+			<DataInput id='datainput' formData={formData} setFormData={setFormData} tenantData={tenantData} vkUser={fetchedUser} secretCode={secretCode} go={go} />
 			<ErrorCode id='errorcode' go={go} />
 			<Persik id='persik' go={go} />
 		</View>
