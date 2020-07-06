@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import ky from 'ky';
+
 import bridge from '@vkontakte/vk-bridge';
 import View from '@vkontakte/vkui/dist/components/View/View';
 import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
@@ -45,7 +47,20 @@ const App = () => {
         }
     }, [activePanel]);
 
-    function fetchData(code) {
+    async function fetchData(code) {
+        //setPopout(spinner);
+        const data = null;
+        try {
+            data = await ky.get(`getclient/${code}/12345`, {prefixUrl: 'http://localhost/api', mode: 'no-cors'}).json();
+            setTenantData(data['data']);
+        } catch(e) {
+            console.log('error', e);
+        }
+        //setPopout(null);
+        return (data !== null);
+    }
+
+    function fetchDataStub(code) {
         setPopout(spinner);
         const data = stub_getData(code);
         setTenantData(data);
