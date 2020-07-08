@@ -18,34 +18,36 @@ const DataInput = props => (
             <FormLayoutGroup top="Данные абонента" />
             <Input type="text" top="Код" name="secret_code" value={props.secretCode} disabled />
             <Input type="text" top="Номер ЛС" name="nomer_ls" value={props.tenantData.nomer_ls} disabled />
-            <Input type="text" top="ФИО" name="fio_" value={`${props.tenantData.fio.imya} ${props.tenantData.fio.otchestvo} ${props.tenantData.fio.familiya[0]}.`} disabled />
-            <Input type="hidden" name="fio" value={`${props.tenantData.fio.familiya} ${props.tenantData.fio.imya} ${props.tenantData.fio.otchestvo}`} disabled />
+            <Input type="text" top="ФИО" name="fio_" value={`${props.tenantData.imya} ${props.tenantData.otchestvo} ${props.tenantData.familiya[0]}.`} disabled />
+            <Input type="hidden" name="fio" value={`${props.tenantData.familiya} ${props.tenantData.imya} ${props.tenantData.otchestvo}`} disabled />
             <Input type="hidden" name="vk_id" value={props.vkUser.id} disabled />
             <Input type="hidden" name="vk_fio" value={`${props.vkUser.last_name} ${props.vkUser.first_name}`} disabled />
 
             <FormLayoutGroup top="Показания приборов учета" />
-            {props.tenantData.schetchiki.map(({ title, cur_value, id }) => (
-                <FormLayoutGroup top={title} key={id} >
-                    <Input top={title} type="number" name={'curcount_' + id} value={cur_value} disabled />
-                    <Input type="number" name={'newcount_' + id} placeholder="Введите новые показания" onChange={ (e) => {
+            {props.tenantData.meters.map(({ title, current_count, new_count, meter_id }) => (
+                <FormLayoutGroup top={title} key={meter_id} >
+                    <Input top={title} type="number" name={'curcount_' + meter_id} value={current_count} disabled />
+                    <Input type="number" name={meter_id} placeholder="Введите новые показания" value={new_count === null ? undefined : new_count} onChange={ (e) => {
                         let found= false;
                         let formData= [...props.formData];
                         //console.log('onchange', formData);
                         for (let i= 0; i < formData.length; i++) {
                             //console.log(formData[i].id == e.currentTarget.name);
-                            if (formData[i].id == e.currentTarget.name) {
-                                formData[i].newcount= e.currentTarget.value;
+                            if (formData[i].meter_id === e.currentTarget.name) {
+                                formData[i].new_count= e.currentTarget.value;
                                 found= true;
                                 //console.log('found');
                                 break;
                             }
                         }
                         if (!found) {
-                            formData.push({id: e.currentTarget.name,
-                                newcount: e.currentTarget.value
+                            formData.push({
+                                meter_id: e.currentTarget.name,
+                                new_count: e.currentTarget.value,
+                                vk_user_id: props.vkUser.id
                             });
                         }
-                        props.setFormData(formData); 
+                        props.setFormData(formData);
                         } } />
                 </FormLayoutGroup>
             ))}

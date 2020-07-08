@@ -10,6 +10,7 @@ import {stub_getData} from './stub';
 import Begin from './panels/Begin'
 import DataInput from './panels/DataInput';
 import ErrorCode from './panels/ErrorCode';
+import ErrorService from './panels/ErrorService';
 import Persik from './panels/Persik';
 
 const App = () => {
@@ -41,36 +42,42 @@ const App = () => {
     useEffect(() => {
         console.log('effect')
         if (activePanel === 'begin') {
-           setSecretCode(null);
+            setSecretCode(null);
             setTenantData(null);
             setFormData([]);
         }
     }, [activePanel]);
 
-    async function fetchData(code) {
-        //setPopout(spinner);
-        const data = null;
+    async function fetchData() {
         try {
-            data = await ky.get(`getclient/${code}/12345`, {prefixUrl: 'http://localhost/api', mode: 'no-cors'}).json();
+            const data = await ky.get(`getclient/${secretCode}/12345`, {prefixUrl: '/api', mode: 'no-cors'}).json();
+            console.log('fetched data', data);
+            if (!data['result']) {
+                console.log('result', data['result']);
+                setActivePanel('errorcode');
+                return;
+            }
             setTenantData(data['data']);
+            setActivePanel('datainput');
         } catch(e) {
-            console.log('error', e);
+            console.log('error fetching data', e);
+            setActivePanel('errorservice');
         }
-        //setPopout(null);
-        return (data !== null);
     }
 
-    function fetchDataStub(code) {
-        setPopout(spinner);
-        const data = stub_getData(code);
-        setTenantData(data);
-        setPopout(null);
-        return (data !== null);
-    }
+    async function sendData() {
+        let options = {
+            prefixUrl: '/api',
+            mode: 'no-cors',
+            json: {
+                result: true
+            }
+        };
+        options['json']['meters'] = [...formData];
+        console.log('datatosend', options);
 
-    function sendData() {
-        setPopout(spinner);
-        
+        const result = await ky.post(`setmeters`, options).json();
+        console.log(result);
     }
 
 
@@ -82,16 +89,18 @@ const App = () => {
                 if ( !secretCode || /[^[0-9]/.test(secretCode) ) {
                     return;
                 }
-                if (!fetchData(secretCode)) {
-                    targetPanel = 'errorcode';
-                }
-                console.log('tenantdata', tenantData);
-                break;
+                setPopout(spinner);
+                fetchData();
+                setPopout(null);
+                return;
                 
             case 'datainput':
                 console.log('from datainput');
                 if (e.currentTarget.dataset.action == "confirm") {
                     console.log('formdata', formData);
+                    setPopout(spinner);
+                    sendData();
+                    setPopout(null);
                 }
                 break;
                 
@@ -106,6 +115,7 @@ const App = () => {
 			<Begin id='begin' vkUser={fetchedUser} setSecretCode={setSecretCode} go={go} />
 			<DataInput id='datainput' formData={formData} setFormData={setFormData} tenantData={tenantData} vkUser={fetchedUser} secretCode={secretCode} go={go} />
 			<ErrorCode id='errorcode' go={go} />
+			<ErrorService id='errorservice' go={go} />
 			<Persik id='persik' go={go} />
 		</View>
 	);
