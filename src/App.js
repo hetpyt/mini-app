@@ -59,7 +59,7 @@ const App = () => {
             }
             setTenantData(data['data']);
             setActivePanel('datainput');
-        } catch(e) {
+        } catch (e) {
             console.log('error fetching data', e);
             setActivePanel('errorservice');
         }
@@ -76,8 +76,16 @@ const App = () => {
         options['json']['meters'] = [...formData];
         console.log('datatosend', options);
 
-        const result = await ky.post(`setmeters`, options).json();
-        console.log(result);
+        try {
+            const data = await ky.post(`setmeters/${secretCode}/12345`, options).json();
+            console.log(data);
+            if (!data['result']) {
+                throw 'result not true';
+            }
+            setActivePanel('persik');
+        } catch (e) {
+            setActivePanel('errorservice');
+        }
     }
 
 
@@ -101,6 +109,7 @@ const App = () => {
                     setPopout(spinner);
                     sendData();
                     setPopout(null);
+                    return;
                 }
                 break;
                 
