@@ -5,8 +5,7 @@ import PanelHeader from '@vkontakte/vkui/dist/components/PanelHeader/PanelHeader
 import PanelHeaderBack from '@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack';
 import Button from '@vkontakte/vkui/dist/components/Button/Button';
 import Div from '@vkontakte/vkui/dist/components/Div/Div';
-import Input from '@vkontakte/vkui/dist/components/Input/Input';
-import persik from '../img/persik.png';
+import persik from './img/persik.png';
 import './Persik.css';
 
 

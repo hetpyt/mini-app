@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import ky from 'ky';
 
 import bridge from '@vkontakte/vk-bridge';
+import Root from '@vkontakte/vkui/dist/components/Root/Root';
 import View from '@vkontakte/vkui/dist/components/View/View';
 import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
 import '@vkontakte/vkui/dist/vkui.css';
 
-import {stub_getData} from './stub';
-import Begin from './panels/Begin'
-import DataInput from './panels/DataInput';
-import ErrorCode from './panels/ErrorCode';
+import Begin from './panels/main/Begin'
+import DataInput from './panels/main/DataInput';
+import ErrorCode from './panels/main/ErrorCode';
 import ErrorService from './panels/ErrorService';
-import Persik from './panels/Persik';
+import Persik from './panels/main/Persik';
 
 const App = () => {
     const spinner = <ScreenSpinner size='large' />;
@@ -34,9 +34,10 @@ const App = () => {
 		async function fetchVkUser() {
             const user = await bridge.send('VKWebAppGetUserInfo')
             setUser(user);
-            setPopout(null);
         }
         fetchVkUser();
+        getData('getuser')
+        setPopout(null);
 	}, []);
 
     useEffect(() => {
@@ -47,6 +48,23 @@ const App = () => {
             setFormData([]);
         }
     }, [activePanel]);
+
+    async function getData(uri) {
+        try {
+            const data = await ky.get(`${uri}`, {prefixUrl: '/api', mode: 'no-cors'}).json();
+            console.log('fetched data', data);
+            if (!data['result']) {
+                console.log('result', data['result']);
+                throw 'result not true';
+            }
+            return data['data'];
+
+        } catch (e) {
+            console.log('error fetching data', e);
+            setActivePanel('errorservice');
+            return false;
+        }
+    }
 
     async function fetchData() {
         try {
@@ -120,13 +138,21 @@ const App = () => {
 	};
 
 	return (
-		<View activePanel={activePanel} popout={popout}>
-			<Begin id='begin' vkUser={fetchedUser} setSecretCode={setSecretCode} go={go} />
-			<DataInput id='datainput' formData={formData} setFormData={setFormData} tenantData={tenantData} vkUser={fetchedUser} secretCode={secretCode} go={go} />
-			<ErrorCode id='errorcode' go={go} />
-			<ErrorService id='errorservice' go={go} />
-			<Persik id='persik' go={go} />
-		</View>
+        <Root activeView='welcome'>
+            <View id='welcome'>
+                <ErrorService id='errorservice' go={go} />
+            </View>
+            <View id='main' activePanel={activePanel} popout={popout}>
+                <Begin id='begin' vkUser={fetchedUser} setSecretCode={setSecretCode} go={go} />
+                <DataInput id='datainput' formData={formData} setFormData={setFormData} tenantData={tenantData} vkUser={fetchedUser} secretCode={secretCode} go={go} />
+                <ErrorCode id='errorcode' go={go} />
+                <ErrorService id='errorservice' go={go} />
+                <Persik id='persik' go={go} />
+            </View>
+            <View id='admin'>
+                <ErrorService id='errorservice' go={go} />
+            </View>
+        </Root>
 	);
 };
 
