@@ -1,38 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
+import Header from '@vkontakte/vkui/dist/components/Header/Header';
 import PanelHeader from '@vkontakte/vkui/dist/components/PanelHeader/PanelHeader';
 import PanelHeaderBack from '@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack';
 import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption';
 import Div from '@vkontakte/vkui/dist/components/Div/Div';
 import Button from '@vkontakte/vkui/dist/components/Button/Button';
 
-const ErrorService = props => (
+const RegistrationRequestActions = props => (
     <Panel id={props.id}>
 		<PanelHeader
 			left={<PanelHeaderBack onClick={props.go} data-to="welcomeview.welcome" />}
 		>
-			Ошибка
+			Заявка № {props.request_id}
 		</PanelHeader>
-        <Div>
-            <Caption level="1" weight="heavy" >
-				{props.error ? `${props.error.message} [${props.error.code}]`
-				: 'В настоящее время сервис недоступен. Повторите попытку позже.'}
-			</Caption>
-        </Div>
-        <Div>
-			<Button size="xl" mode="primary" onClick={props.go} data-to="welcomeview.welcome">
-				В начало
-			</Button>
+		<Header mode="primary">Выберите действие над заявкой</Header>
+		<Div style={{display: 'flex'}}>
+			<Button size="l" stretched style={{ marginRight: 8 }} onClick={props.go} data-action="hide" data-to="welcomeview.welcome">Не показывать</Button>
+			<Button size="l" stretched onClick={props.go} data-action="delete" mode="destructive" data-to="welcomeview.welcome">Удалить</Button>
 		</Div>
 
 	</Panel>
 );
 
-ErrorService.propTypes = {
+RegistrationRequestActions.propTypes = {
 	id: PropTypes.string.isRequired,
 	go: PropTypes.func.isRequired,
-	error: PropTypes.object,
 };
 
-export default ErrorService;
+export default RegistrationRequestActions;

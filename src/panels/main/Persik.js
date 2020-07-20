@@ -12,17 +12,17 @@ import './Persik.css';
 const Persik = props => (
 	<Panel id={props.id}>
 		<PanelHeader
-			left={<PanelHeaderBack onClick={props.go} data-to="begin">
+			left={<PanelHeaderBack onClick={props.go} data-to="account-selection">
 				
 			</PanelHeaderBack>}
 		>
-			Спасибо
+			Спасибо!
 		</PanelHeader>
 		<img className="Persik" src={persik} alt="Persik The Cat"/>
 		
 		<Div>
-			<Button size="xl" mode="primary" onClick={props.go} data-to="begin">
-				В начало
+			<Button size="xl" mode="primary" onClick={props.go} data-to="account-selection">
+				К выбору лицевого счета
 			</Button>
 		</Div>
 	</Panel>

@@ -7,21 +7,21 @@ import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption'
 import Div from '@vkontakte/vkui/dist/components/Div/Div';
 import Button from '@vkontakte/vkui/dist/components/Button/Button';
 
-const ErrorService = props => (
+const StaticMessage = props => (
     <Panel id={props.id}>
 		<PanelHeader
-			left={<PanelHeaderBack onClick={props.go} data-to="welcomeview.welcome" />}
+			left={<PanelHeaderBack onClick={props.go} data-to={'to' in props ? props.to : 'welcomeview.welcome'} />}
 		>
-			Ошибка
+			Сообщение
 		</PanelHeader>
         <Div>
             <Caption level="1" weight="heavy" >
-				{props.error ? `${props.error.message} [${props.error.code}]`
-				: 'В настоящее время сервис недоступен. Повторите попытку позже.'}
+				{'message' in props ? `${props.message}`
+				: '(Сообщение не указано)'}
 			</Caption>
         </Div>
         <Div>
-			<Button size="xl" mode="primary" onClick={props.go} data-to="welcomeview.welcome">
+			<Button size="xl" mode="primary" onClick={props.go} data-to={'to' in props ? props.to : 'welcomeview.welcome'}>
 				В начало
 			</Button>
 		</Div>
@@ -29,10 +29,11 @@ const ErrorService = props => (
 	</Panel>
 );
 
-ErrorService.propTypes = {
+StaticMessage.propTypes = {
 	id: PropTypes.string.isRequired,
 	go: PropTypes.func.isRequired,
-	error: PropTypes.object,
+	to: PropTypes.string,
+	message: PropTypes.string,
 };
 
-export default ErrorService;
+export default StaticMessage;

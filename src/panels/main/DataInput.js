@@ -12,19 +12,15 @@ import Div from '@vkontakte/vkui/dist/components/Div/Div';
 
 const DataInput = props => (
     <Panel id={props.id}>
-		<PanelHeader left={<PanelHeaderBack onClick={props.go} data-to="begin" />} >
+		<PanelHeader left={<PanelHeaderBack onClick={props.go} data-to="account-selection" />} >
 			Ввод показаний
 		</PanelHeader>
-        {props.tenantData && props.secretCode && props.vkUser && 
+        {props.vkUser && props.meters &&
         <FormLayout>
-            <FormLayoutGroup top="Данные абонента" />
-            <Input type="text" top="Код" name="secret_code" value={props.secretCode} disabled />
-            <Input type="text" top="Номер ЛС" name="nomer_ls" value={props.tenantData.nomer_ls} disabled />
-            <Input type="text" top="ФИО" name="fio_" value={`${props.tenantData.imya} ${props.tenantData.otchestvo} ${props.tenantData.familiya[0]}.`} disabled />
 
             <FormLayoutGroup top="Показания приборов учета" />
             {
-                props.tenantData.meters.map(
+                props.meters.map(
                     ({ title, current_count, new_count, meter_id, recieve_date, vk_user_id }) => (
                         <FormLayoutGroup top={title} key={meter_id} bottom={recieve_date ? 'были переданы ' + recieve_date + (props.vkUser.id === parseInt(vk_user_id) ? ' вами' : ' другим пользователем') : 'еще не передавались'}>
                             <Input type="number" name={'curcount_' + meter_id} value={current_count} disabled />
@@ -44,10 +40,10 @@ const DataInput = props => (
                                 if (!found) {
                                     formData.push({
                                         meter_id: e.currentTarget.name,
-                                        new_count: e.currentTarget.value,
-                                        vk_user_id: props.vkUser.id,
-                                        vk_user_familiya: props.vkUser.last_name,
-                                        vk_user_imya: props.vkUser.first_name
+                                        new_count: e.currentTarget.value
+                                        //vk_user_id: props.vkUser.id,
+                                        //vk_user_familiya: props.vkUser.last_name,
+                                        //vk_user_imya: props.vkUser.first_name
                                     });
                                 }
                                 props.setFormData(formData);
@@ -67,8 +63,7 @@ const DataInput = props => (
 DataInput.propTypes = {
 	id: PropTypes.string.isRequired,
 	go: PropTypes.func.isRequired,
-    secretCode: PropTypes.string,
-    tenantData: PropTypes.object,
+    meters: PropTypes.array,
     setFormData: PropTypes.func.isRequired,
     formData: PropTypes.array.isRequired,
     vkUser: PropTypes.object,

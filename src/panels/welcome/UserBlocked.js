@@ -7,18 +7,15 @@ import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption'
 import Div from '@vkontakte/vkui/dist/components/Div/Div';
 import Button from '@vkontakte/vkui/dist/components/Button/Button';
 
-const ErrorService = props => (
+const UserBlocked = props => (
     <Panel id={props.id}>
 		<PanelHeader
 			left={<PanelHeaderBack onClick={props.go} data-to="welcomeview.welcome" />}
 		>
-			Ошибка
+			Регистрация
 		</PanelHeader>
         <Div>
-            <Caption level="1" weight="heavy" >
-				{props.error ? `${props.error.message} [${props.error.code}]`
-				: 'В настоящее время сервис недоступен. Повторите попытку позже.'}
-			</Caption>
+            <Caption level="1" weight="heavy" >Запрос на регистрацию отправлен.</Caption>
         </Div>
         <Div>
 			<Button size="xl" mode="primary" onClick={props.go} data-to="welcomeview.welcome">
@@ -29,10 +26,9 @@ const ErrorService = props => (
 	</Panel>
 );
 
-ErrorService.propTypes = {
+UserBlocked.propTypes = {
 	id: PropTypes.string.isRequired,
 	go: PropTypes.func.isRequired,
-	error: PropTypes.object,
 };
 
-export default ErrorService;
+export default UserBlocked;

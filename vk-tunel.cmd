@@ -1,2 +1,2 @@
-vk-tunnel --insecure=1 --http-protocol=https --ws-protocol=wss --host=localhost --port=10888
+vk-tunnel --insecure=1 --http-protocol=http --ws-protocol=wss --host=localhost --port=80
 pause
