@@ -10,14 +10,13 @@ import '@vkontakte/vkui/dist/vkui.css';
 import Welcome from './panels/welcome/Welcome';
 import RegistrationRequestActions from './panels/welcome/RegistrationRequestActions';
 import Registration from './panels/registration/Registration';
-import RegistrationDataSent from './panels/registration/RegistrationDataSent';
 
 import AccountSelection from './panels/main/AccountSelection'
 import DataInput from './panels/main/DataInput';
 import Persik from './panels/main/Persik';
 
 import Lobby from './panels/admin/Lobby';
-
+import RegRequestsProcessing from './panels/admin/RegRequestsProcessing';
 import StaticMessage from './panels/StaticMessage';
 import ErrorService from './panels/ErrorService';
 
@@ -36,6 +35,9 @@ const App = () => {
     // информация о запросе на регистрацию
     const [regInfo, setRegInfo] = useState(null);
     const [regRequestId, setRegRequestId] = useState(null);
+    // admin
+    const [regRequests, setRegRequests] = useState([]);
+
     const [activeAcc, setActiveAcc] = useState(null);
     const [metersInfo, setMetersInfo] = useState(null);
     const [formData, setFormData] = useState([]);
@@ -92,6 +94,10 @@ const App = () => {
                 getMeters(tg => {setActiveTarget(tg);});
                 break;
 
+            case 'regrequests-processing':
+                getRegRequests();
+                break;
+
             default:
                 break;
     
@@ -101,7 +107,7 @@ const App = () => {
     async function fetchUser() {
         try {
             setDataFetching(true);
-            const vkuser = await bridge.send('VKWebAppGetUserInfo')
+            const vkuser = await bridge.send('VKWebAppGetUserInfo');
             console.log('vkuser=', vkuser);
             setVkUser(vkuser);
 
@@ -148,13 +154,13 @@ const App = () => {
                 throw 'result not true';
             }
             //setPopout(null);
+            if (on_done) on_done();
         } catch (e) {
             //setPopout(null);
             console.log('error sending reg data', e);
             setActivePanel('errorservice');
         } finally {
             setDataFetching(false);
-            if (on_done) on_done();
         }
     }
 
@@ -166,7 +172,7 @@ const App = () => {
             let target = '';
             const result = await ky.get(`getmeters/${activeAcc.acc_id}`, {prefixUrl: '/api', mode: 'no-cors'}).json();
             if (result.result && result.data_len) {
-                setMetersInfo(result.data[0].meters);
+                setMetersInfo(result.data);
                 target = 'datainput';
             } else {
                 target = 'no-meters';
@@ -178,6 +184,37 @@ const App = () => {
             setActivePanel('errorservice');
         } finally {
             //setPopout(null);
+            setDataFetching(false);
+        }
+    }
+
+    async function getRegRequests(on_done = null) {
+        setDataFetching(true);
+        let options = {
+            prefixUrl: '/api',
+            mode: 'no-cors',
+            json: {
+                result: true,
+                vk_user_id: vkUser.id,
+                action : 'getall',
+                filters : [
+                ]
+            }
+        };
+
+        try {
+            const result = await ky.post(`adminprocessregistrationrequests`, options).json();
+            if (result.result) {
+                setRegRequests(result.data);
+            } else {
+                throw 'result not true';
+            }
+            if (on_done) on_done();
+
+        } catch (e) {
+            console.log('error fetching regrequests', e);
+            setActivePanel('errorservice');
+        } finally {
             setDataFetching(false);
         }
     }
@@ -232,6 +269,7 @@ const App = () => {
             if (!data['result']) {
                 throw 'result not true';
             }
+            if (on_done) on_done();
         } catch (e) {
             console.log('regReqAction',e);
             setActivePanel('errorservice');
@@ -239,7 +277,6 @@ const App = () => {
             console.log('regReqAction finally');
             //setPopout(null);
             setDataFetching(false);
-            if (on_done) on_done();
         }
     }
 
@@ -252,7 +289,7 @@ const App = () => {
         if (activeView === 'welcomeview') {
             switch (activePanel) {
                 case 'welcome':
-                    if (targetPanel == 'account-selection' && userInfo && !userInfo.accounts.length) {
+                    if (targetPanel === 'account-selection' && userInfo && !userInfo.accounts.length) {
                         target = 'no-accounts';
                         console.log('set target to welcome.no-accounts');
                     }
@@ -296,7 +333,7 @@ const App = () => {
             switch (activePanel) {
                 case 'datainput':
                     console.log('from datainput');
-                    if (e.currentTarget.dataset.action == "confirm") {
+                    if (e.currentTarget.dataset.action === "confirm") {
                         console.log('formdata', formData);
                         sendData(() => {setActiveTarget(target);});
                         return;
@@ -361,6 +398,7 @@ const App = () => {
             <View id='adminview' activePanel={activePanel} popout={popout}>
                 <ErrorService id='errorservice' go={go} error={error} />
                 <Lobby id='lobby' go={go} vkUser={vkUser} userInfo={userInfo} />
+                <RegRequestsProcessing id='regrequests-processing' go={go} vkUser={vkUser} userInfo={userInfo} regRequests={regRequests}/>
             </View>
         </Root>
 	);

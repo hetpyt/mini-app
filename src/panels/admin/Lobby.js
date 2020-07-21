@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
 import PanelHeader from '@vkontakte/vkui/dist/components/PanelHeader/PanelHeader';
+import Header from '@vkontakte/vkui/dist/components/Header/Header';
 import PanelHeaderBack from '@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack';
-import Button from '@vkontakte/vkui/dist/components/Button/Button';
+import CellButton from '@vkontakte/vkui/dist/components/CellButton/CellButton';
 import Group from '@vkontakte/vkui/dist/components/Group/Group';
 import SimpleCell from '@vkontakte/vkui/dist/components/SimpleCell/SimpleCell';
 import RichCell from '@vkontakte/vkui/dist/components/RichCell/RichCell';
@@ -28,7 +29,16 @@ const Lobby = ({ id, go, vkUser, userInfo }) => (
 				{`${vkUser.first_name} ${vkUser.last_name} (${vkUser.id})`}
 			</SimpleCell>
 		</Group>}
-
+		{userInfo && 'ADMIN' === userInfo.privileges &&
+		<Group header={<Header mode="secondary">Меню администратора</Header>}>
+      		<CellButton>Полномочия пользователей</CellButton>
+		</Group>
+		}
+		{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
+		<Group header={<Header mode="secondary">Меню оператора</Header>}>
+      		<CellButton onClick={go} data-to="regrequests-processing">Заявки на привязку ЛС</CellButton>
+    	</Group>	
+		}
 	</Panel>
 );
 
