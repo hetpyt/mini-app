@@ -16,7 +16,9 @@ import DataInput from './panels/main/DataInput';
 import Persik from './panels/main/Persik';
 
 import Lobby from './panels/admin/Lobby';
-import RegRequestsProcessing from './panels/admin/RegRequestsProcessing';
+import RegRequestsList from './panels/admin/RegRequestsList';
+import RegRequestDetail from './panels/admin/RegRequestDetail';
+
 import StaticMessage from './panels/StaticMessage';
 import ErrorService from './panels/ErrorService';
 
@@ -37,8 +39,11 @@ const App = () => {
     const [regRequestId, setRegRequestId] = useState(null);
     // admin
     const [regRequests, setRegRequests] = useState([]);
+    const [regRequestsFilters, setRegRequestsFilters] = useState([]);
+    const [activeRegRequest, setActiveRegRequest] = useState(null);
 
-    const [activeAcc, setActiveAcc] = useState(null);
+    const [activeItem, setActiveItem] = useState(null);
+
     const [metersInfo, setMetersInfo] = useState(null);
     const [formData, setFormData] = useState([]);
 	const [popout, setPopout] = useState(spinner);
@@ -94,8 +99,15 @@ const App = () => {
                 getMeters(tg => {setActiveTarget(tg);});
                 break;
 
-            case 'regrequests-processing':
-                getRegRequests();
+            case 'regrequests-list':
+                processRegRequests('getall', 'list', regRequestsFilters);
+                break;
+
+            case 'regrequest-detail':
+                processRegRequests('detail', null, [{
+                    field: 'id',
+                    value: formData.request_id
+                }]);
                 break;
 
             default:
@@ -170,9 +182,10 @@ const App = () => {
         try {
             //setPopout(spinner);
             let target = '';
-            const result = await ky.get(`getmeters/${activeAcc.acc_id}`, {prefixUrl: '/api', mode: 'no-cors'}).json();
+            const result = await ky.get(`getmeters/${activeItem.acc_id}`, {prefixUrl: '/api', mode: 'no-cors'}).json();
             if (result.result && result.data_len) {
                 setMetersInfo(result.data);
+                setFormData(result.data);
                 target = 'datainput';
             } else {
                 target = 'no-meters';
@@ -188,7 +201,7 @@ const App = () => {
         }
     }
 
-    async function getRegRequests(on_done = null) {
+    async function processRegRequests(action, option, filters, on_done = null) {
         setDataFetching(true);
         let options = {
             prefixUrl: '/api',
@@ -196,19 +209,43 @@ const App = () => {
             json: {
                 result: true,
                 vk_user_id: vkUser.id,
-                action : 'getall',
-                filters : [
-                ]
+                action: action,
+                options: option, 
+                filters: filters
             }
         };
 
+        console.log('processRegRequests.options=', options);
         try {
             const result = await ky.post(`adminprocessregistrationrequests`, options).json();
             if (result.result) {
-                setRegRequests(result.data);
+                if (action === 'getall') setRegRequests(result.data);
+                else if (action === 'detail' && result.data.length) {
+                    try {
+                    const tokenData = await bridge.send("VKWebAppGetAuthToken", {"app_id": 7524946, "scope": ""});
+                    console.log('token=', tokenData);
+                    const userData = await bridge.send('VKWebAppCallAPIMethod', {
+                        "method": "users.get", 
+                        "request_id": 'get_user_info', 
+                        "params": {
+                            "user_ids": "" + result.data[0].vk_user_id, 
+                            "fields" : "city,photo_200",
+                            "access_token": tokenData.access_token,
+                            "v":"5.120"
+                        }
+                    });
+                    console.log('requserdata=', userData);
+                    result.data[0].vk_user_data = userData.response[0];
+                    } catch (e) {
+                        result.data[0].vk_user_data = null;
+                        console.log('cant get vk user data', e);
+                    }
+                    setActiveRegRequest(result.data[0]);
+                }
             } else {
                 throw 'result not true';
             }
+            console.log('processRegRequests.result=', result);
             if (on_done) on_done();
 
         } catch (e) {
@@ -260,7 +297,7 @@ const App = () => {
                 result: true,
                 vk_user_id: vkUser.id,
                 action: action,
-                request_id: regRequestId
+                request_id: activeRegRequest.id
             }
         };
         try {
@@ -345,6 +382,23 @@ const App = () => {
             };
         }    
         else if (activeView === 'adminview') {
+            switch (activePanel) {
+                case 'regrequests-list':
+                    break;
+
+                case 'regrequest-detail':
+                    if (target === 'regrequest-action') {
+                        let action = e.currentTarget.dataset.action;
+                        if (action === 'approve' && !formData.account_id) return;
+                        processRegRequests(action,
+                            formData, [
+                                {field: "id",
+                                 value: formData.request_id}
+                            ], () => {setActiveTarget('regrequests-list')});
+                        return;
+                    }
+                    break;
+            }
 
         }
 
@@ -379,9 +433,9 @@ const App = () => {
 	return (
         <Root id='root' activeView={activeView} >
             <View id='welcomeview' activePanel={activePanel}  popout={popout} >
-                <Welcome id='welcome' go={go} vkUser={vkUser} userInfo={userInfo} regInfo={regInfo} setRegRequestId={setRegRequestId} />
+                <Welcome id='welcome' go={go} vkUser={vkUser} userInfo={userInfo} regInfo={regInfo} setActiveRegRequest={setActiveRegRequest} />
                 <ErrorService id='errorservice' go={go} error={error} />
-                <RegistrationRequestActions id='regrequest-actions' go={go} request_id={regRequestId} />
+                <RegistrationRequestActions id='regrequest-actions' go={go} activeRegRequest={activeRegRequest} />
                 <StaticMessage id='no-accounts' go={go} message={'К учетной записи не привязано ни одного лицевого счета.'} />
             </View>
             <View id='registrationview' activePanel={activePanel}  popout={popout} >
@@ -390,15 +444,16 @@ const App = () => {
                 <StaticMessage id='registration-data-sent' go={go} message={'Запрос на привязку лицевого счета отправлен.'} />
             </View>
             <View id='mainview' activePanel={activePanel} popout={popout}>
-                <AccountSelection id='account-selection' vkUser={vkUser} userInfo={userInfo} setActiveAcc={setActiveAcc} go={go} />
-                <DataInput id='datainput' formData={formData} setFormData={setFormData} meters={metersInfo} vkUser={vkUser} go={go} />
+                <AccountSelection id='account-selection' vkUser={vkUser} userInfo={userInfo} setActiveAcc={setActiveItem} go={go} />
+                <DataInput id='datainput' formData={formData} setFormData={setFormData} activeAcc={activeItem} meters={metersInfo} vkUser={vkUser} go={go} />
                 <ErrorService id='errorservice' go={go} error={error} />
                 <Persik id='persik' go={go} />
             </View>
             <View id='adminview' activePanel={activePanel} popout={popout}>
                 <ErrorService id='errorservice' go={go} error={error} />
                 <Lobby id='lobby' go={go} vkUser={vkUser} userInfo={userInfo} />
-                <RegRequestsProcessing id='regrequests-processing' go={go} vkUser={vkUser} userInfo={userInfo} regRequests={regRequests}/>
+                <RegRequestsList id='regrequests-list' go={go} vkUser={vkUser} userInfo={userInfo} setFormData={setFormData} regRequests={regRequests} setRegRequestsFilters={setRegRequestsFilters}/>
+                <RegRequestDetail id='regrequest-detail' go={go} vkUser={vkUser} userInfo={userInfo} activeRegRequest={activeRegRequest} formData={formData} setFormData={setFormData} />
             </View>
         </Root>
 	);

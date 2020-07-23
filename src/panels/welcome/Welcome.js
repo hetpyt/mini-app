@@ -15,7 +15,7 @@ import Icon24Report from '@vkontakte/icons/dist/24/report';
 import Icon24DismissSubstract from '@vkontakte/icons/dist/24/dismiss_substract';
 import Icon24Spinner from '@vkontakte/icons/dist/24/spinner';
 
-const Welcome = ({ id, go, vkUser, userInfo, regInfo, setRegRequestId }) => (
+const Welcome = ({ id, go, vkUser, userInfo, regInfo, setActiveRegRequest }) => (
 	<Panel id={id}>
 		<PanelHeader>Добро пожаловать!</PanelHeader>
 		{vkUser &&
@@ -31,18 +31,18 @@ const Welcome = ({ id, go, vkUser, userInfo, regInfo, setRegRequestId }) => (
 		{regInfo &&
 			<Div>
 				{regInfo.map(
-					({ id, acc_id, is_approved }) => (
+					({ id, acc_id, is_approved, rejection_reason }, index) => (
 						<SimpleCell 
 							key={id} 
-							data-request_id={id}
+							data-index={index}
 							data-to='regrequest-actions'
 							multiline={true} 
 							expandable={true}
 							text={'Номер заявки ' + id}
-							description={'Заявка №' + id + (is_approved === null ? ' ожидает проверки' : ' отклонена')}
+							description={'Заявка №' + id + (is_approved === null ? ' ожидает проверки' : (parseInt(is_approved) === 0 ? ' отклонена по причине: ' + (rejection_reason === null ? 'причина не указана' : rejection_reason) : ' одобрена'))}
 							onClick={e => {
-								console.log('request_id=', e.currentTarget.dataset.request_id);
-								setRegRequestId(e.currentTarget.dataset.request_id);
+								console.log('request_index=', e.currentTarget.dataset.index);
+								setActiveRegRequest(regInfo[e.currentTarget.dataset.index]);
 								go(e);
 							}}
 						>
@@ -63,7 +63,7 @@ const Welcome = ({ id, go, vkUser, userInfo, regInfo, setRegRequestId }) => (
 		}
 		<Div>
 			<Button size="xl" mode="primary" onClick={go} data-to="registrationview.registration">
-				Приаязать лицевой счет
+				Привязать лицевой счет
 			</Button>
 		</Div>
 		{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
@@ -82,7 +82,7 @@ Welcome.propTypes = {
 	vkUser: PropTypes.object,
 	userInfo: PropTypes.object,
 	regInfo: PropTypes.object,
-	setRegRequestId: PropTypes.func
+	setActiveRegRequest: PropTypes.func
 };
 
 export default Welcome;

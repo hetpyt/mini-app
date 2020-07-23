@@ -13,12 +13,14 @@ const RegistrationRequestActions = props => (
 		<PanelHeader
 			left={<PanelHeaderBack onClick={props.go} data-to="welcomeview.welcome" />}
 		>
-			Заявка № {props.request_id}
+			Заявка № {props.activeRegRequest.id}
 		</PanelHeader>
 		<Header mode="primary">Выберите действие над заявкой</Header>
 		<Div style={{display: 'flex'}}>
 			<Button size="l" stretched style={{ marginRight: 8 }} onClick={props.go} data-action="hide" data-to="welcomeview.welcome">Не показывать</Button>
-			<Button size="l" stretched onClick={props.go} data-action="delete" mode="destructive" data-to="welcomeview.welcome">Удалить</Button>
+			{props.activeRegRequest.is_approved === null &&
+				<Button size="l" stretched onClick={props.go} data-action="delete" mode="destructive" data-to="welcomeview.welcome">Отменить</Button>
+			}
 		</Div>
 
 	</Panel>

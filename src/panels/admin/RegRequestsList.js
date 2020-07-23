@@ -19,9 +19,9 @@ import Icon28BlockOutline from '@vkontakte/icons/dist/28/block_outline';
 import Icon24Hide from '@vkontakte/icons/dist/24/hide';
 import Icon24Delete from '@vkontakte/icons/dist/24/delete';
 
-const RegRequestsProcessing = ({ id, go, vkUser, userInfo, regRequests }) => (
+const RegRequestsList = ({ id, go, vkUser, userInfo, regRequests, setFormData, setRegRequestsFilters}) => (
 	<Panel id={id}>
-		<PanelHeader left={<PanelHeaderBack onClick={go} data-to="adminview.lobby" />} >Администрирование</PanelHeader>
+		<PanelHeader left={<PanelHeaderBack onClick={go} data-to="adminview.lobby" />} >Заявки на привязку ЛС</PanelHeader>
 
 		{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
 		<Group header={<Header mode="secondary">Перечень заявок</Header>}>
@@ -33,7 +33,8 @@ const RegRequestsProcessing = ({ id, go, vkUser, userInfo, regRequests }) => (
 						key={index}
 						multiline 
 						expandable
-						data-index={index}
+						data-to='regrequest-detail'
+						data-request_id={item.id}
 						before={item.is_approved === null ? <Icon28RecentOutline/> : (parseInt(item.is_approved) === 1 ? <Icon28DoneOutline/> : <Icon28BlockOutline/>)}
 						after={parseInt(item.del_in_app) === 1 ? <Icon24Delete/> : (parseInt(item.hide_in_app) === 1 ? <Icon24Hide/> : null)}
 						description={item.is_approved === null ? 
@@ -42,7 +43,9 @@ const RegRequestsProcessing = ({ id, go, vkUser, userInfo, regRequests }) => (
 								'Одобрена ' : 
 								'Отклонена ') + (vkUser.id === parseInt(item.processed_by) ? 'вами' : 'пользователем ID' + item.processed_by)}
 						onClick={e => {
-							console.log('selected ' + e.currentTarget.dataset.index);
+							console.log('selected ' + e.currentTarget.dataset.request_id);
+							setFormData({request_id: e.currentTarget.dataset.request_id});
+							go(e);
 						}}
 						>{'Заявка №' + item.id}</SimpleCell>
 					)
@@ -54,12 +57,13 @@ const RegRequestsProcessing = ({ id, go, vkUser, userInfo, regRequests }) => (
 	</Panel>
 );
 
-RegRequestsProcessing.propTypes = {
+RegRequestsList.propTypes = {
 	id: PropTypes.string.isRequired,
 	go: PropTypes.func.isRequired,
+	setRegRequestsFilters: PropTypes.func.isRequired,
+	regRequests: PropTypes.array,
 	vkUser: PropTypes.object,
-	userInfo: PropTypes.object,
-	regRequests: PropTypes.array
+	userInfo: PropTypes.object
 };
 
-export default RegRequestsProcessing;
+export default RegRequestsList;
