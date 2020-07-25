@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import ky from 'ky';
+import 'url-search-params-polyfill';
 
 import bridge from '@vkontakte/vk-bridge';
 import Root from '@vkontakte/vkui/dist/components/Root/Root';
@@ -25,6 +26,11 @@ import ErrorService from './panels/ErrorService';
 
 const App = () => {
     const spinner = <ScreenSpinner size='large' />;
+
+    const [appParams, _] = useState((() => {
+        return new URLSearchParams(window.location.search);
+    })());
+
     const [activeView, setActiveView] = useState('welcomeview');
     const [activePanel, setActivePanel] = useState('welcome');
 
@@ -56,9 +62,7 @@ const App = () => {
 				document.body.attributes.setNamedItem(schemeAttribute);
 			    } 
             }   
-	    );
-        //fetchUser();
-        
+        );
 	}, []);
 
     useEffect(() => {
@@ -123,13 +127,21 @@ const App = () => {
             console.log('vkuser=', vkuser);
             setVkUser(vkuser);
 
-            let result = await ky.get(`getuser/${vkuser.id}`, {prefixUrl: '/api', mode: 'no-cors'}).json();
+            const options = {
+                prefixUrl: '/api',
+                mode: 'no-cors',
+                searchParams: {
+                    user_id: vkuser.id
+                }
+            };
+
+            let result = await ky.get(`getuser`, options).json();
             console.log('user=', result);
             if (result.data_len) {
                 setUserInfo(result.data[0]);
             } 
             // проверим статус регистрации
-            result = await ky.get(`registrationstatus/${vkuser.id}`, {prefixUrl: '/api', mode: 'no-cors'}).json();
+            result = await ky.get(`registrationstatus`, options).json();
             console.log('reg=', result);
             setRegInfo(result.data_len ? result.data : null);
             //setPopout(null);
@@ -150,12 +162,16 @@ const App = () => {
         let options = {
             prefixUrl: '/api',
             mode: 'no-cors',
+            searchParams: {
+                user_id: vkUser.id
+            },
             json: {
-                result: true
+                result: true,
+                registration_data: [...formData][0]
             }
         };
-        options['json']['registration_data'] = [...formData][0];
-        options['json']['registration_data']['vk_user_id'] = vkUser.id;
+        //options['json']['registration_data'] = [...formData][0];
+        //options['json']['registration_data']['vk_user_id'] = vkUser.id;
 
         console.log('reg_data', options);
 
@@ -178,11 +194,17 @@ const App = () => {
 
     async function getMeters(on_done = null) {
         setDataFetching(true);
-
+        let options = {
+            prefixUrl: '/api',
+            mode: 'no-cors',
+            searchParams: {
+                user_id: vkUser.id
+            }
+        };
         try {
             //setPopout(spinner);
             let target = '';
-            const result = await ky.get(`getmeters/${activeItem.acc_id}`, {prefixUrl: '/api', mode: 'no-cors'}).json();
+            const result = await ky.get(`getmeters/${activeItem.acc_id}`, options).json();
             if (result.result && result.data_len) {
                 setMetersInfo(result.data);
                 setFormData(result.data);
@@ -206,9 +228,11 @@ const App = () => {
         let options = {
             prefixUrl: '/api',
             mode: 'no-cors',
+            searchParams: {
+                user_id: vkUser.id
+            },
             json: {
                 result: true,
-                vk_user_id: vkUser.id,
                 action: action,
                 options: option, 
                 filters: filters
@@ -222,15 +246,20 @@ const App = () => {
                 if (action === 'getall') setRegRequests(result.data);
                 else if (action === 'detail' && result.data.length) {
                     try {
-                    const tokenData = await bridge.send("VKWebAppGetAuthToken", {"app_id": 7524946, "scope": ""});
-                    console.log('token=', tokenData);
+                    let token = appParams.get('access_token');
+                    if (!token) {
+                        const tokenData = await bridge.send("VKWebAppGetAuthToken", {"app_id": parseInt(appParams.get('vk_app_id')), "scope": ""});
+                        console.log('token=', tokenData);
+                        token = tokenData.access_token;
+                        appParams.set('access_token', token);
+                    }
                     const userData = await bridge.send('VKWebAppCallAPIMethod', {
                         "method": "users.get", 
                         "request_id": 'get_user_info', 
                         "params": {
                             "user_ids": "" + result.data[0].vk_user_id, 
                             "fields" : "city,photo_200",
-                            "access_token": tokenData.access_token,
+                            "access_token": token,//tokenData.access_token,
                             "v":"5.120"
                         }
                     });
@@ -262,12 +291,14 @@ const App = () => {
         let options = {
             prefixUrl: '/api',
             mode: 'no-cors',
+            searchParams: {
+                user_id: vkUser.id
+            },
             json: {
                 result: true,
-                vk_user_id: vkUser.id
+                meters: [...formData]
             }
         };
-        options['json']['meters'] = [...formData];
         console.log('datatosend', options);
 
         try {
@@ -293,9 +324,11 @@ const App = () => {
         let options = {
             prefixUrl: '/api',
             mode: 'no-cors',
+            searchParams: {
+                user_id: vkUser.id
+            },
             json: {
                 result: true,
-                vk_user_id: vkUser.id,
                 action: action,
                 request_id: activeRegRequest.id
             }
@@ -440,7 +473,7 @@ const App = () => {
             </View>
             <View id='registrationview' activePanel={activePanel}  popout={popout} >
                 <ErrorService id='errorservice' go={go} error={error} />
-                <Registration id='registration' go={go}  formData={formData} setFormData={setFormData} />
+                <Registration id='registration' go={go}  formData={formData} setFormData={setFormData} regInfo={regInfo} />
                 <StaticMessage id='registration-data-sent' go={go} message={'Запрос на привязку лицевого счета отправлен.'} />
             </View>
             <View id='mainview' activePanel={activePanel} popout={popout}>

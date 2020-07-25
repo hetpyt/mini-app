@@ -11,9 +11,11 @@ import Avatar from '@vkontakte/vkui/dist/components/Avatar/Avatar';
 import FormLayout from '@vkontakte/vkui/dist/components/FormLayout/FormLayout';
 import Input from '@vkontakte/vkui/dist/components/Input/Input';
 import FormLayoutGroup from '@vkontakte/vkui/dist/components/FormLayoutGroup/FormLayoutGroup';
+import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption';
+import Header from '@vkontakte/vkui/dist/components/Header/Header';
 
 
-const Registration = ({ id, go, setFormData, formData }) => {
+const Registration = ({ id, go, setFormData, formData, regInfo }) => {
 
 	const on_change = (e) => {
 			let fData= [...formData];
@@ -23,11 +25,31 @@ const Registration = ({ id, go, setFormData, formData }) => {
 			setFormData(fData);
 	};
 
+	const count_waitings = () => {
+		let waitingReqs = 0;
+		console.log('regInfo=', regInfo);
+		if (Array.isArray(regInfo)) {
+			for (let i= 0; i < regInfo.length; i++) {
+				if (regInfo[i].is_approved === null) waitingReqs++;
+			}
+		}
+		console.log('waitingReqs=', waitingReqs);
+		return waitingReqs;
+	};
+
 	return (
 		<Panel id={id}>
 		<PanelHeader left={<PanelHeaderBack onClick={go} data-to="welcomeview.welcome" />}>Регистрация</PanelHeader>
+		{count_waitings() >= 3
+		? 
+		<Div>
+            <Caption level="1" weight="heavy" >
+				Превышено максимальное число заявок. Подождите пока будут обработаны уже отправленные. 
+			</Caption>
+		</Div>
+		:
         <FormLayout>
-            <FormLayoutGroup top="Заполните данные абонента" />
+			<Header mode="secondary">Заполните данные абонента</Header>
             <Input type="text" required top="Номер лицевого счета" name="acc_id" onChange={on_change} />
             <Input type="text" top="Фамилия" name="surname" onChange={on_change} />
             <Input type="text" top="Имя" name="first_name" onChange={on_change} />
@@ -40,6 +62,7 @@ const Registration = ({ id, go, setFormData, formData }) => {
                 Отправить
             </Button>
 		</FormLayout>
+		}
 	</Panel>
 	);
 };
@@ -47,7 +70,8 @@ const Registration = ({ id, go, setFormData, formData }) => {
 Registration.propTypes = {
 	id: PropTypes.string.isRequired,
 	go: PropTypes.func.isRequired,
-	formData: PropTypes.any
+	formData: PropTypes.any,
+	regInfo: PropTypes.array
 };
 
 export default Registration;

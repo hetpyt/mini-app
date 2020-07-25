@@ -54,23 +54,30 @@ const Welcome = ({ id, go, vkUser, userInfo, regInfo, setActiveRegRequest }) => 
 				<Caption level="2" weight="regular">По всем вопросам Вы можете обратиться используя контактные данные, указанные в Вашей квитанции.</Caption>
 			</Div>
 		}
-		{userInfo && 
+		{userInfo && parseInt(userInfo.is_blocked) === 0  &&
 		<Div>
 			<Button size="xl" mode="primary" onClick={go} data-to="mainview.account-selection">
 				Перейти к вводу показаний
 			</Button>
 		</Div>
 		}
+		{(!userInfo || (userInfo && parseInt(userInfo.is_blocked) === 0)) &&
 		<Div>
 			<Button size="xl" mode="primary" onClick={go} data-to="registrationview.registration">
 				Привязать лицевой счет
 			</Button>
 		</Div>
-		{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
+		}
+		{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 && parseInt(userInfo.is_blocked) === 0  &&
 		<Div>
 			<Button size="xl" mode="primary" onClick={go} data-to="adminview.lobby">
 				Администрирование
 			</Button>
+		</Div>
+		}
+		{userInfo && parseInt(userInfo.is_blocked) !== 0 &&
+		<Div>
+			<Caption level="1" weight="regular">Пользователь заблокирован в системе.</Caption>		
 		</Div>
 		}
 	</Panel>
