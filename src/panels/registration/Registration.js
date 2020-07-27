@@ -21,25 +21,25 @@ const Registration = ({ id, go, setFormData, formData, regInfo }) => {
 			let fData= [...formData];
 			if (fData.length === 0) fData.push({});
 			fData[0][e.currentTarget.name] = e.currentTarget.value;
-			console.log('onchange', formData);
+			//console.log('onchange', formData);
 			setFormData(fData);
 	};
 
 	const count_waitings = () => {
 		let waitingReqs = 0;
-		console.log('regInfo=', regInfo);
+		//console.log('regInfo=', regInfo);
 		if (Array.isArray(regInfo)) {
 			for (let i= 0; i < regInfo.length; i++) {
 				if (regInfo[i].is_approved === null) waitingReqs++;
 			}
 		}
-		console.log('waitingReqs=', waitingReqs);
+		//console.log('waitingReqs=', waitingReqs);
 		return waitingReqs;
 	};
 
 	return (
 		<Panel id={id}>
-		<PanelHeader left={<PanelHeaderBack onClick={go} data-to="welcomeview.welcome" />}>Регистрация</PanelHeader>
+		<PanelHeader left={<PanelHeaderBack onClick={go} data-to="welcomeview.welcome" />}>Запрос на присоединение ЛС</PanelHeader>
 		{count_waitings() >= 3
 		? 
 		<Div>
@@ -51,11 +51,11 @@ const Registration = ({ id, go, setFormData, formData, regInfo }) => {
         <FormLayout>
 			<Header mode="secondary">Заполните данные абонента</Header>
             <Input type="text" required top="Номер лицевого счета" name="acc_id" onChange={on_change} />
-            <Input type="text" top="Фамилия" name="surname" onChange={on_change} />
-            <Input type="text" top="Имя" name="first_name" onChange={on_change} />
+            <Input type="text" required top="Фамилия" name="surname" onChange={on_change} />
+            <Input type="text" required top="Имя" name="first_name" onChange={on_change} />
             <Input type="text" top="Отчество" name="patronymic" onChange={on_change} />
-            <Input type="text" top="Улица" name="street" onChange={on_change} />
-            <Input type="text" top="Дом" name="n_dom" onChange={on_change} />
+            <Input type="text" required top="Улица" name="street" onChange={on_change} />
+            <Input type="text" required top="Дом" name="n_dom" onChange={on_change} />
             <Input type="number" top="Квартира" name="n_kv" onChange={on_change} />
             <Input type="number" required top="Проверочный код с квитанции" name="secret_code" onChange={on_change} />
             <Button size="xl" mode="primary" onClick={go} data-action="confirm" data-to="registration-data-sent">

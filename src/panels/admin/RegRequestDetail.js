@@ -94,10 +94,17 @@ const RegRequestDetail = ({ id, go, vkUser, userInfo, activeRegRequest, formData
 				</FormLayout>
 				{activeRegRequest.is_approved === null && 
 					<FormLayout>
+						{parseInt(activeRegRequest.del_in_app) === 0 
+						?
 						<Div style={{display: 'flex'}}>
 							<Button size="l" stretched style={{ marginRight: 8 }} onClick={go} data-action="approve" data-to="regrequest-action">Одобрить</Button>
 							<Button size="l" stretched onClick={go} data-action="reject" mode="destructive" data-to="regrequest-action">Отклонить</Button>
 						</Div>
+						:
+						<Div style={{display: 'flex'}}>
+							<Button size="l" stretched onClick={go} data-action="delete" mode="destructive" data-to="regrequest-action">Удалить окончательно</Button>
+						</Div>	
+						}
 					</FormLayout>
 				}
 			</Group>	

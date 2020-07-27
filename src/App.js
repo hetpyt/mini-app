@@ -19,6 +19,8 @@ import Persik from './panels/main/Persik';
 import Lobby from './panels/admin/Lobby';
 import RegRequestsList from './panels/admin/RegRequestsList';
 import RegRequestDetail from './panels/admin/RegRequestDetail';
+import DataProcessUpload from './panels/admin/DataProcessUpload';
+import DataProcessDownload from './panels/admin/DataProcessDownload';
 
 import StaticMessage from './panels/StaticMessage';
 import ErrorService from './panels/ErrorService';
@@ -42,12 +44,14 @@ const App = () => {
     const [userInfo, setUserInfo] = useState(null);
     // информация о запросе на регистрацию
     const [regInfo, setRegInfo] = useState(null);
-    const [regRequestId, setRegRequestId] = useState(null);
+    //const [regRequestId, setRegRequestId] = useState(null);
     // admin
     const [regRequests, setRegRequests] = useState([]);
     const [regRequestsFilters, setRegRequestsFilters] = useState([]);
     const [activeRegRequest, setActiveRegRequest] = useState(null);
-
+    // file data
+	const [fileData, setFileData] = useState(null);
+        
     const [activeItem, setActiveItem] = useState(null);
 
     const [metersInfo, setMetersInfo] = useState(null);
@@ -114,6 +118,18 @@ const App = () => {
                 }]);
                 break;
 
+            case 'dataprocess-upload':
+                setFileData(null);
+                break;
+
+            case 'dataprocess-download':
+                setFormData([{
+                    period_begin: '',
+                    period_end: ''
+                }])
+                break;
+    
+    
             default:
                 break;
     
@@ -170,22 +186,21 @@ const App = () => {
                 registration_data: [...formData][0]
             }
         };
-        //options['json']['registration_data'] = [...formData][0];
-        //options['json']['registration_data']['vk_user_id'] = vkUser.id;
 
-        console.log('reg_data', options);
+        console.log('sendRegData.options=', options);
 
         try {
-            const data = await ky.post(`registrationrequest`, options).json();
-            console.log(data);
-            if (!data['result']) {
-                throw 'result not true';
+            let target = 'registration-data-sent';
+            const result = await ky.post(`registrationrequest`, options).json();
+            console.log('sendRegData.result=', result);
+            if (!result['result']) {
+                if (result.error.name === 'CODE_CHECK_FAIL') target = 'registration-data-code-incorrect';
+                else throw result.error.message;
             }
-            //setPopout(null);
-            if (on_done) on_done();
+            if (on_done) on_done(target);
         } catch (e) {
-            //setPopout(null);
             console.log('error sending reg data', e);
+            setError(e);
             setActivePanel('errorservice');
         } finally {
             setDataFetching(false);
@@ -246,25 +261,25 @@ const App = () => {
                 if (action === 'getall') setRegRequests(result.data);
                 else if (action === 'detail' && result.data.length) {
                     try {
-                    let token = appParams.get('access_token');
-                    if (!token) {
-                        const tokenData = await bridge.send("VKWebAppGetAuthToken", {"app_id": parseInt(appParams.get('vk_app_id')), "scope": ""});
-                        console.log('token=', tokenData);
-                        token = tokenData.access_token;
-                        appParams.set('access_token', token);
-                    }
-                    const userData = await bridge.send('VKWebAppCallAPIMethod', {
-                        "method": "users.get", 
-                        "request_id": 'get_user_info', 
-                        "params": {
-                            "user_ids": "" + result.data[0].vk_user_id, 
-                            "fields" : "city,photo_200",
-                            "access_token": token,//tokenData.access_token,
-                            "v":"5.120"
+                        let token = appParams.get('access_token');
+                        if (!token) {
+                            const tokenData = await bridge.send("VKWebAppGetAuthToken", {"app_id": parseInt(appParams.get('vk_app_id')), "scope": ""});
+                            console.log('token=', tokenData);
+                            token = tokenData.access_token;
+                            appParams.set('access_token', token);
                         }
-                    });
-                    console.log('requserdata=', userData);
-                    result.data[0].vk_user_data = userData.response[0];
+                        const userData = await bridge.send('VKWebAppCallAPIMethod', {
+                            "method": "users.get", 
+                            "request_id": 'get_user_info', 
+                            "params": {
+                                "user_ids": "" + result.data[0].vk_user_id, 
+                                "fields" : "city,photo_200",
+                                "access_token": token,//tokenData.access_token,
+                                "v":"5.120"
+                            }
+                        });
+                        console.log('requserdata=', userData);
+                        result.data[0].vk_user_data = userData.response[0];
                     } catch (e) {
                         result.data[0].vk_user_data = null;
                         console.log('cant get vk user data', e);
@@ -303,14 +318,14 @@ const App = () => {
 
         try {
             const result = await ky.post(`setmeters`, options).json();
-            console.log(result);
             if (!result['result']) {
-                console.log('sendData', result);
+                console.log('sendData.result=', result);
                 throw 'result not true';
             }
             if (on_done) on_done();
         } catch (e) {
             console.log('sendData Exception=', e);
+            setError(e);
             setActivePanel('errorservice');
         } finally {
             setDataFetching(false);
@@ -350,6 +365,36 @@ const App = () => {
         }
     }
 
+    async function uploadAccountData(on_done = null) {
+        setDataFetching(true);
+        let options = {
+            prefixUrl: '/api',
+            mode: 'no-cors',
+            searchParams: {
+                user_id: vkUser.id
+            },
+            json: {
+                result: true,
+                data: fileData.data
+            }
+        };
+        try {
+            const result = await ky.post(`adminprocessdata`, options).json();
+            console.log(result);
+            if (!result['result']) {
+                console.log('uploadAccountData', result);
+                throw 'result not true';
+            }
+            if (on_done) on_done();
+        } catch (e) {
+            console.log('uploadAccountData Exception=', e);
+            setError(e);
+            setActivePanel('errorservice');
+        } finally {
+            setDataFetching(false);
+        }
+    }
+
 	const go = e => {
         let target = e.currentTarget.dataset.to;
         let {targetView, targetPanel} = parseTo(target);
@@ -385,12 +430,17 @@ const App = () => {
                         if (formData.length === 0) {
                             return;
                         }
-                        if (!formData[0].acc_id || !formData[0].secret_code) {
+                        if (!(formData[0].acc_id 
+                            && formData[0].secret_code
+                            && formData[0].surname
+                            && formData[0].first_name
+                            && formData[0].street
+                            && formData[0].n_dom)) {
                             console.log('regdata required fields');
                             return;
                         }
                         //setPopout(spinner);
-                        sendRegData(() => {setActiveTarget(target);});
+                        sendRegData((t) => {setActiveTarget(t);});
                         return;
                     }
                 default:
@@ -414,6 +464,7 @@ const App = () => {
                     break;
             };
         }    
+        
         else if (activeView === 'adminview') {
             switch (activePanel) {
                 case 'regrequests-list':
@@ -428,6 +479,15 @@ const App = () => {
                                 {field: "id",
                                  value: formData.request_id}
                             ], () => {setActiveTarget('regrequests-list')});
+                        return;
+                    }
+                    break;
+
+                case 'dataprocess-upload':
+                    if (e.currentTarget.dataset.action === 'confirm') {
+                        uploadAccountData(() => {
+                            console.log('go to after upload');
+                            setActiveTarget(target)});
                         return;
                     }
                     break;
@@ -474,7 +534,8 @@ const App = () => {
             <View id='registrationview' activePanel={activePanel}  popout={popout} >
                 <ErrorService id='errorservice' go={go} error={error} />
                 <Registration id='registration' go={go}  formData={formData} setFormData={setFormData} regInfo={regInfo} />
-                <StaticMessage id='registration-data-sent' go={go} message={'Запрос на привязку лицевого счета отправлен.'} />
+                <StaticMessage id='registration-data-sent' go={go} message={'Запрос принят в обработку.'} />
+                <StaticMessage id='registration-data-code-incorrect' go={go} message={'Запрос не принят. Введен неверный номер лицевого счета или проверочный код.'} />
             </View>
             <View id='mainview' activePanel={activePanel} popout={popout}>
                 <AccountSelection id='account-selection' vkUser={vkUser} userInfo={userInfo} setActiveAcc={setActiveItem} go={go} />
@@ -487,6 +548,8 @@ const App = () => {
                 <Lobby id='lobby' go={go} vkUser={vkUser} userInfo={userInfo} />
                 <RegRequestsList id='regrequests-list' go={go} vkUser={vkUser} userInfo={userInfo} setFormData={setFormData} regRequests={regRequests} setRegRequestsFilters={setRegRequestsFilters}/>
                 <RegRequestDetail id='regrequest-detail' go={go} vkUser={vkUser} userInfo={userInfo} activeRegRequest={activeRegRequest} formData={formData} setFormData={setFormData} />
+                <DataProcessUpload id='dataprocess-upload' go={go} vkUser={vkUser} userInfo={userInfo} fileData={fileData} setFileData={setFileData}/>
+                <DataProcessDownload id='dataprocess-download' go={go} vkUser={vkUser} userInfo={userInfo} formData={formData} setFormData={setFormData}/>
             </View>
         </Root>
 	);

@@ -37,6 +37,8 @@ const Lobby = ({ id, go, vkUser, userInfo }) => (
 		{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
 		<Group header={<Header mode="secondary">Меню оператора</Header>}>
       		<CellButton onClick={go} data-to="regrequests-list">Заявки на привязку ЛС</CellButton>
+      		<CellButton onClick={go} data-to="dataprocess-upload">Загрузка реестра ЛС</CellButton>
+      		<CellButton onClick={go} data-to="dataprocess-download">Выгрузка принятых показаний</CellButton>
     	</Group>	
 		}
 	</Panel>

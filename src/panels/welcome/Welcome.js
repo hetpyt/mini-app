@@ -46,7 +46,7 @@ const Welcome = ({ id, go, vkUser, userInfo, regInfo, setActiveRegRequest }) => 
 								go(e);
 							}}
 						>
-							Заявка на привязку лицевого счета №{acc_id}
+							Заявка на присоединение лицевого счета №{acc_id}
 						</SimpleCell>
 					)
 				)
@@ -64,7 +64,7 @@ const Welcome = ({ id, go, vkUser, userInfo, regInfo, setActiveRegRequest }) => 
 		{(!userInfo || (userInfo && parseInt(userInfo.is_blocked) === 0)) &&
 		<Div>
 			<Button size="xl" mode="primary" onClick={go} data-to="registrationview.registration">
-				Привязать лицевой счет
+				Присоединить лицевой счет
 			</Button>
 		</Div>
 		}
