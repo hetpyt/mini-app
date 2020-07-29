@@ -22,7 +22,7 @@ const StaticMessage = props => (
         </Div>
         <Div>
 			<Button size="xl" mode="primary" onClick={props.go} data-to={'to' in props ? props.to : 'welcomeview.welcome'}>
-				В начало
+				{'to' in props ? 'Вернуться' : 'В начало'}
 			</Button>
 		</Div>
 

@@ -12,6 +12,7 @@ import Div from '@vkontakte/vkui/dist/components/Div/Div';
 import Avatar from '@vkontakte/vkui/dist/components/Avatar/Avatar';
 import FormLayout from '@vkontakte/vkui/dist/components/FormLayout/FormLayout';
 import List from '@vkontakte/vkui/dist/components/List/List';
+import Link from '@vkontakte/vkui/dist/components/Link/Link';
 import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption';
 import Icon28DoneOutline from '@vkontakte/icons/dist/28/done_outline';
 import Icon28RecentOutline from '@vkontakte/icons/dist/28/recent_outline';
@@ -19,12 +20,20 @@ import Icon28BlockOutline from '@vkontakte/icons/dist/28/block_outline';
 import Icon24Hide from '@vkontakte/icons/dist/24/hide';
 import Icon24Delete from '@vkontakte/icons/dist/24/delete';
 
-const RegRequestsList = ({ id, go, vkUser, userInfo, regRequests, setFormData, setRegRequestsFilters}) => (
+const RegRequestsList = ({ id, go, vkUser, userInfo, regRequests, setFormData, regRequestsFilters, setRegRequestsFilters, showModal}) => (
 	<Panel id={id}>
 		<PanelHeader left={<PanelHeaderBack onClick={go} data-to="adminview.lobby" />} >Заявки на привязку ЛС</PanelHeader>
 
 		{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
-		<Group header={<Header mode="secondary">Перечень заявок</Header>}>
+		<Group header={<Header 
+			mode="secondary"
+			aside={<Link onClick={e => {
+				e.preventDefault();
+				showModal();
+			}}>Фильтры</Link>}
+			>
+				Перечень заявок
+			</Header>}>
 			{regRequests &&
 			<List>
 				{regRequests.map(
@@ -47,7 +56,7 @@ const RegRequestsList = ({ id, go, vkUser, userInfo, regRequests, setFormData, s
 							setFormData({request_id: e.currentTarget.dataset.request_id});
 							go(e);
 						}}
-						>{'Заявка №' + item.id}</SimpleCell>
+						>{'Заявка №' + item.id + ' от ' + item.request_date}</SimpleCell>
 					)
 				)}
 			</List>
@@ -60,6 +69,7 @@ const RegRequestsList = ({ id, go, vkUser, userInfo, regRequests, setFormData, s
 RegRequestsList.propTypes = {
 	id: PropTypes.string.isRequired,
 	go: PropTypes.func.isRequired,
+	regRequestsFilters: PropTypes.any,
 	setRegRequestsFilters: PropTypes.func.isRequired,
 	regRequests: PropTypes.array,
 	vkUser: PropTypes.object,

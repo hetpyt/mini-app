@@ -11,6 +11,8 @@ import Avatar from '@vkontakte/vkui/dist/components/Avatar/Avatar';
 import FormLayout from '@vkontakte/vkui/dist/components/FormLayout/FormLayout';
 import Input from '@vkontakte/vkui/dist/components/Input/Input';
 import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption';
+import Title from '@vkontakte/vkui/dist/components/Typography/Title/Title';
+
 import Icon24Report from '@vkontakte/icons/dist/24/report';
 import Icon24DismissSubstract from '@vkontakte/icons/dist/24/dismiss_substract';
 import Icon24Spinner from '@vkontakte/icons/dist/24/spinner';
@@ -18,16 +20,10 @@ import Icon24Spinner from '@vkontakte/icons/dist/24/spinner';
 const Welcome = ({ id, go, vkUser, userInfo, regInfo, setActiveRegRequest }) => (
 	<Panel id={id}>
 		<PanelHeader>Добро пожаловать!</PanelHeader>
-		{vkUser &&
-		<Group title="VK User Data">
-			<SimpleCell
-				before={vkUser.photo_200 ? <Avatar src={vkUser.photo_200}/> : null}
-				description={vkUser.city && vkUser.city.title ? vkUser.city.title : ''}
-			>
-				{`${vkUser.first_name} ${vkUser.last_name} (${vkUser.id})`}
-			</SimpleCell>
-		</Group>}
-
+		<Div>
+			<Title style={{color: "red"}} align="center" level="2" weight="semibold">Приложение работает в тестовом режиме!</Title>
+			<Title align="center" level="3" weight="regular">Переданные через данное приложение показания НЕ БУДУТ ДОСТАВЛЕНЫ в управляющую организацию.</Title>
+		</Div>
 		{regInfo &&
 			<Div>
 				{regInfo.map(

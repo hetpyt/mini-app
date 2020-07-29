@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import ky from 'ky';
+import { saveAs } from 'file-saver';
 import 'url-search-params-polyfill';
 
 import bridge from '@vkontakte/vk-bridge';
@@ -21,10 +22,13 @@ import RegRequestsList from './panels/admin/RegRequestsList';
 import RegRequestDetail from './panels/admin/RegRequestDetail';
 import DataProcessUpload from './panels/admin/DataProcessUpload';
 import DataProcessDownload from './panels/admin/DataProcessDownload';
+import AdminModal from './modals/admin/AdminModal';
 
 import StaticMessage from './panels/StaticMessage';
 import ErrorService from './panels/ErrorService';
 
+import Icon24Done from '@vkontakte/icons/dist/24/done';
+import Icon24Cancel from '@vkontakte/icons/dist/24/cancel';
 
 const App = () => {
     const spinner = <ScreenSpinner size='large' />;
@@ -35,6 +39,7 @@ const App = () => {
 
     const [activeView, setActiveView] = useState('welcomeview');
     const [activePanel, setActivePanel] = useState('welcome');
+    const [activeModal, setActiveModal] = useState(null);
 
     const [dataFetchig, setDataFetching] = useState(false);
     const [error, setError] = useState(null);
@@ -47,7 +52,12 @@ const App = () => {
     //const [regRequestId, setRegRequestId] = useState(null);
     // admin
     const [regRequests, setRegRequests] = useState([]);
-    const [regRequestsFilters, setRegRequestsFilters] = useState([]);
+    const [regRequestsFilters, setRegRequestsFilters] = useState([
+        {
+            field: "is_approved",
+            value: ['null']
+        }
+    ]);
     const [activeRegRequest, setActiveRegRequest] = useState(null);
     // file data
 	const [fileData, setFileData] = useState(null);
@@ -123,18 +133,32 @@ const App = () => {
                 break;
 
             case 'dataprocess-download':
+                setFileData(null);
                 setFormData([{
                     period_begin: '',
                     period_end: ''
                 }])
                 break;
     
-    
             default:
                 break;
     
         }
     }, [activePanel]);
+
+    useEffect(() => {
+        console.log('regRequestsFilters=', regRequestsFilters);
+    }, [regRequestsFilters]);
+
+    useEffect(() => {
+        if (!activeModal) {
+            switch (activePanel) {
+                case 'regrequests-list':
+                    processRegRequests('getall', 'list', regRequestsFilters);
+                    break;
+            }
+        }
+    }, [activeModal]);
 
     async function fetchUser() {
         try {
@@ -182,7 +206,6 @@ const App = () => {
                 user_id: vkUser.id
             },
             json: {
-                result: true,
                 registration_data: [...formData][0]
             }
         };
@@ -247,7 +270,6 @@ const App = () => {
                 user_id: vkUser.id
             },
             json: {
-                result: true,
                 action: action,
                 options: option, 
                 filters: filters
@@ -310,8 +332,7 @@ const App = () => {
                 user_id: vkUser.id
             },
             json: {
-                result: true,
-                meters: [...formData]
+                meters: formData
             }
         };
         console.log('datatosend', options);
@@ -343,7 +364,6 @@ const App = () => {
                 user_id: vkUser.id
             },
             json: {
-                result: true,
                 action: action,
                 request_id: activeRegRequest.id
             }
@@ -374,7 +394,7 @@ const App = () => {
                 user_id: vkUser.id
             },
             json: {
-                result: true,
+                action: 'upload',
                 data: fileData.data
             }
         };
@@ -383,13 +403,42 @@ const App = () => {
             console.log(result);
             if (!result['result']) {
                 console.log('uploadAccountData', result);
-                throw 'result not true';
+                throw result.error.message;
             }
             if (on_done) on_done();
         } catch (e) {
             console.log('uploadAccountData Exception=', e);
             setError(e);
             setActivePanel('errorservice');
+        } finally {
+            setDataFetching(false);
+        }
+    }
+
+    async function restRequest(rest_action, json_data = null, on_done = null) {
+        setDataFetching(true);
+        let options = {
+            prefixUrl: '/api',
+            mode: 'no-cors',
+            searchParams: {
+                user_id: vkUser.id
+            }
+        };
+        try {
+            let result = null;
+            if (json_data){
+                options.json = json_data;
+                result = await ky.post(rest_action, options).json();
+            } else {
+                result = await ky.get(rest_action, options).json();
+            }
+            console.log('restRequest(', rest_action, ').result=', result);
+            if (typeof on_done == 'function') on_done(result);
+
+        } catch (e) {
+            setError(e);
+            setActivePanel('errorservice');
+
         } finally {
             setDataFetching(false);
         }
@@ -491,6 +540,38 @@ const App = () => {
                         return;
                     }
                     break;
+
+                case 'dataprocess-download':
+                    if (e.currentTarget.dataset.action === 'confirm') {
+                        restRequest(
+                            'adminprocessdata', 
+                            {
+                                action: 'download',
+                                data: formData[0]
+                            },
+                            (result) => {
+                                console.log('go.adminprocessdata.download.on_done ', result);
+                                if (result.result){
+                                    if (!result.data_len) {
+                                        setActivePanel('no-indications');
+                                        return;
+                                    }
+                                    //setFileData(result.data[0]);
+                                    try {
+                                        let blob = new Blob([JSON.stringify(result.data, null, 2)], {type: 'text/plain'});
+                                        saveAs(blob, "indications.json");
+                                    } catch (e) {
+                                        setError(e);
+                                        setActivePanel('errorservice');
+                                    }
+                                } else {
+                                    setError(result.error.message);
+                                    setActivePanel('errorservice');
+                                }
+                            });
+                        return;
+                    }
+                    break;
             }
 
         }
@@ -523,6 +604,19 @@ const App = () => {
         setActivePanel(targetPanel);
     }
 
+    const showModal = () => {
+        if (activeView === 'adminview') {
+            switch (activePanel) {
+                case 'regrequests-list':
+                    setActiveModal('regrequests-filters');
+                    break;
+            }
+        }
+    }
+
+    const onModalDone = () => {
+    }
+
 	return (
         <Root id='root' activeView={activeView} >
             <View id='welcomeview' activePanel={activePanel}  popout={popout} >
@@ -535,7 +629,9 @@ const App = () => {
                 <ErrorService id='errorservice' go={go} error={error} />
                 <Registration id='registration' go={go}  formData={formData} setFormData={setFormData} regInfo={regInfo} />
                 <StaticMessage id='registration-data-sent' go={go} message={'Запрос принят в обработку.'} />
-                <StaticMessage id='registration-data-code-incorrect' go={go} message={'Запрос не принят. Введен неверный номер лицевого счета или проверочный код.'} />
+                <StaticMessage id='registration-data-code-incorrect' go={go} message={'Запрос не принят. Введен неверный номер лицевого счета или проверочный код.'}
+                    to={'registration'} 
+                />
             </View>
             <View id='mainview' activePanel={activePanel} popout={popout}>
                 <AccountSelection id='account-selection' vkUser={vkUser} userInfo={userInfo} setActiveAcc={setActiveItem} go={go} />
@@ -543,13 +639,18 @@ const App = () => {
                 <ErrorService id='errorservice' go={go} error={error} />
                 <Persik id='persik' go={go} />
             </View>
-            <View id='adminview' activePanel={activePanel} popout={popout}>
+            <View id='adminview' activePanel={activePanel} popout={popout} 
+                modal={<AdminModal activeModal={activeModal} setActiveModal={setActiveModal} regRequestsFilters={regRequestsFilters} setRegRequestsFilters={setRegRequestsFilters} onModalDone={onModalDone}/>}
+            >
                 <ErrorService id='errorservice' go={go} error={error} />
                 <Lobby id='lobby' go={go} vkUser={vkUser} userInfo={userInfo} />
-                <RegRequestsList id='regrequests-list' go={go} vkUser={vkUser} userInfo={userInfo} setFormData={setFormData} regRequests={regRequests} setRegRequestsFilters={setRegRequestsFilters}/>
+                <RegRequestsList id='regrequests-list' go={go} vkUser={vkUser} userInfo={userInfo} setFormData={setFormData} regRequests={regRequests} 
+                    regRequestsFilters={regRequestsFilters} setRegRequestsFilters={setRegRequestsFilters} showModal={showModal}
+                />
                 <RegRequestDetail id='regrequest-detail' go={go} vkUser={vkUser} userInfo={userInfo} activeRegRequest={activeRegRequest} formData={formData} setFormData={setFormData} />
                 <DataProcessUpload id='dataprocess-upload' go={go} vkUser={vkUser} userInfo={userInfo} fileData={fileData} setFileData={setFileData}/>
                 <DataProcessDownload id='dataprocess-download' go={go} vkUser={vkUser} userInfo={userInfo} formData={formData} setFormData={setFormData}/>
+                <StaticMessage id='no-indications' go={go} message={'За выбранный период показания отсутствуют.'} to={'lobby'} />
             </View>
         </Root>
 	);

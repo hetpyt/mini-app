@@ -33,7 +33,7 @@ const RegRequestDetail = ({ id, go, vkUser, userInfo, activeRegRequest, formData
 		<Panel id={id}>
 			<PanelHeader left={<PanelHeaderBack onClick={go} data-to="adminview.regrequests-list" />} >Заявка</PanelHeader>
 			{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 && activeRegRequest &&
-			<Group header={<Header mode="primary">{'№ ' + activeRegRequest.id}</Header>}>
+			<Group header={<Header mode="primary">{'№ ' + activeRegRequest.id + ' от ' + activeRegRequest.request_date}</Header>}>
 				<SimpleCell 
 				before={activeRegRequest.vk_user_data ? <Avatar src={activeRegRequest.vk_user_data.photo_200}/> : <Icon28User/>}
 				description={activeRegRequest.vk_user_data && activeRegRequest.vk_user_data.city && activeRegRequest.vk_user_data.city.title ? activeRegRequest.vk_user_data.city.title : ''}>

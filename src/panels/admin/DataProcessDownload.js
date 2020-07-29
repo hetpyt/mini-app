@@ -29,7 +29,7 @@ const DataProcessDownload = ({ id, go, vkUser, userInfo, formData, setFormData})
 			<PanelHeader left={<PanelHeaderBack onClick={go} data-to="adminview.lobby" />} >Выгрузка показаний с сервера</PanelHeader>
 			{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
 				<FormLayout>
-					<Header mode="primary">Выберите период получения показаний</Header>
+					<Header mode="primary" subtitle="если не указан, то будут выгружены все имеющиеся на данный момент">Выберите период получения показаний</Header>
 					<Input type="date" name="period_begin" top="Начало периода" onChange={e => {
 						console.log('period_begin', e.currentTarget.value);
 						let fData = [...formData];
@@ -48,6 +48,9 @@ const DataProcessDownload = ({ id, go, vkUser, userInfo, formData, setFormData})
 						fData[0].period_end = e.currentTarget.value;
 						setFormData(fData);
 					}}/>
+					<Button size="xl" mode="primary" onClick={go} data-action="confirm" data-to="lobby">
+						Скачать файл
+					</Button>
 				</FormLayout>
 			}
 		</Panel>
