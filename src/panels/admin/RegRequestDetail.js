@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import bridge from '@vkontakte/vk-bridge';
 import PropTypes from 'prop-types';
 import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
@@ -25,9 +25,23 @@ import Icon28BlockOutline from '@vkontakte/icons/dist/28/block_outline';
 import Icon24Hide from '@vkontakte/icons/dist/24/hide';
 import Icon24Delete from '@vkontakte/icons/dist/24/delete';
 import Icon28User from '@vkontakte/icons/dist/28/user';
+
 const RegRequestDetail = ({ id, go, vkUser, userInfo, activeRegRequest, formData, setFormData }) => {
 
+	console.log('RegRequestDetail exec');
+
 	const [accIndex, setAccIndex] = useState(null);
+
+	useEffect(() => {
+		console.log('useEffect activeRegRequest=', activeRegRequest);
+		if (activeRegRequest && activeRegRequest.selected_accounts) {
+			if (activeRegRequest.selected_accounts.length) {
+				console.log('useEffect.default=0');
+				setAccIndex(0);
+			}
+		}
+	}, []);
+
 
 	return (
 		<Panel id={id}>
@@ -61,7 +75,6 @@ const RegRequestDetail = ({ id, go, vkUser, userInfo, activeRegRequest, formData
 						setFormData(fdata);
 						console.log('formdata=',fdata);
 					}}>
-						<option key={-1} selected value=''>[Выберите лицевой счет]</option>
 						{
 							((arr) => {
 								return arr.map((el, index) => (
@@ -86,7 +99,9 @@ const RegRequestDetail = ({ id, go, vkUser, userInfo, activeRegRequest, formData
 				</FormLayout>
 				<FormLayout>
 					<Header mode="secondary">Причина отказа</Header>
-					<Input type="text" name="rejection_reason" onChange={e => {
+					<Input type="text" top="Будет показана заявителю в случае отказа" name="rejection_reason" disabled={activeRegRequest.is_approved !== null} 
+					defaultValue={activeRegRequest.rejection_reason} 
+					onChange={e => {
 						let fdata = {...formData};
 						fdata.rejection_reason = e.currentTarget.value;
 						setFormData(fdata);

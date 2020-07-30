@@ -122,10 +122,10 @@ const App = () => {
                 break;
 
             case 'regrequest-detail':
-                processRegRequests('detail', null, [{
-                    field: 'id',
-                    value: formData.request_id
-                }]);
+                // processRegRequests('detail', null, [{
+                //     field: 'id',
+                //     value: formData.request_id
+                // }]);
                 break;
 
             case 'dataprocess-upload':
@@ -160,6 +160,10 @@ const App = () => {
         }
     }, [activeModal]);
 
+    const getToken = () => {
+        return window["servertokenname_" + appParams.get('vk_app_id')];
+    }
+
     async function fetchUser() {
         try {
             setDataFetching(true);
@@ -169,9 +173,10 @@ const App = () => {
 
             const options = {
                 prefixUrl: '/api',
-                mode: 'no-cors',
+                //mode: 'no-cors',
                 searchParams: {
-                    user_id: vkuser.id
+                    user_id: vkuser.id,
+                    token: getToken(),
                 }
             };
 
@@ -188,6 +193,7 @@ const App = () => {
 
         } catch (e) {
             console.log('error fetching user info', e);
+            setError(e);
             setActivePanel('errorservice');
             //setPopout(null);
         } finally {
@@ -203,7 +209,8 @@ const App = () => {
             prefixUrl: '/api',
             mode: 'no-cors',
             searchParams: {
-                user_id: vkUser.id
+                user_id: vkUser.id,
+                token: getToken(),
             },
             json: {
                 registration_data: [...formData][0]
@@ -236,7 +243,8 @@ const App = () => {
             prefixUrl: '/api',
             mode: 'no-cors',
             searchParams: {
-                user_id: vkUser.id
+                user_id: vkUser.id,
+                token: getToken(),
             }
         };
         try {
@@ -267,7 +275,8 @@ const App = () => {
             prefixUrl: '/api',
             mode: 'no-cors',
             searchParams: {
-                user_id: vkUser.id
+                user_id: vkUser.id,
+                token: getToken(),
             },
             json: {
                 action: action,
@@ -316,6 +325,7 @@ const App = () => {
 
         } catch (e) {
             console.log('error fetching regrequests', e);
+            setError(e);
             setActivePanel('errorservice');
         } finally {
             setDataFetching(false);
@@ -329,7 +339,8 @@ const App = () => {
             prefixUrl: '/api',
             mode: 'no-cors',
             searchParams: {
-                user_id: vkUser.id
+                user_id: vkUser.id,
+                token: getToken(),
             },
             json: {
                 meters: formData
@@ -361,7 +372,8 @@ const App = () => {
             prefixUrl: '/api',
             mode: 'no-cors',
             searchParams: {
-                user_id: vkUser.id
+                user_id: vkUser.id,
+                token: getToken(),
             },
             json: {
                 action: action,
@@ -391,7 +403,8 @@ const App = () => {
             prefixUrl: '/api',
             mode: 'no-cors',
             searchParams: {
-                user_id: vkUser.id
+                user_id: vkUser.id,
+                token: getToken(),
             },
             json: {
                 action: 'upload',
@@ -421,7 +434,8 @@ const App = () => {
             prefixUrl: '/api',
             mode: 'no-cors',
             searchParams: {
-                user_id: vkUser.id
+                user_id: vkUser.id,
+                token: getToken(),
             }
         };
         try {
@@ -517,6 +531,16 @@ const App = () => {
         else if (activeView === 'adminview') {
             switch (activePanel) {
                 case 'regrequests-list':
+                    if (targetPanel === 'regrequest-detail') {
+                        processRegRequests('detail', null, 
+                            [{
+                                field: 'id',
+                                value: e.currentTarget.dataset.request_id
+                            }], 
+                            () => {setActiveTarget(target)}
+                        );
+                        return;
+                    }
                     break;
 
                 case 'regrequest-detail':
@@ -645,7 +669,7 @@ const App = () => {
                 <ErrorService id='errorservice' go={go} error={error} />
                 <Lobby id='lobby' go={go} vkUser={vkUser} userInfo={userInfo} />
                 <RegRequestsList id='regrequests-list' go={go} vkUser={vkUser} userInfo={userInfo} setFormData={setFormData} regRequests={regRequests} 
-                    regRequestsFilters={regRequestsFilters} setRegRequestsFilters={setRegRequestsFilters} showModal={showModal}
+                    regRequestsFilters={regRequestsFilters} setRegRequestsFilters={setRegRequestsFilters} showModal={showModal} processRegRequests={processRegRequests}
                 />
                 <RegRequestDetail id='regrequest-detail' go={go} vkUser={vkUser} userInfo={userInfo} activeRegRequest={activeRegRequest} formData={formData} setFormData={setFormData} />
                 <DataProcessUpload id='dataprocess-upload' go={go} vkUser={vkUser} userInfo={userInfo} fileData={fileData} setFileData={setFileData}/>

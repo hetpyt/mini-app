@@ -19,19 +19,23 @@ import Icon28RecentOutline from '@vkontakte/icons/dist/28/recent_outline';
 import Icon28BlockOutline from '@vkontakte/icons/dist/28/block_outline';
 import Icon24Hide from '@vkontakte/icons/dist/24/hide';
 import Icon24Delete from '@vkontakte/icons/dist/24/delete';
+import Icon24Filter from '@vkontakte/icons/dist/24/filter';
 
-const RegRequestsList = ({ id, go, vkUser, userInfo, regRequests, setFormData, regRequestsFilters, setRegRequestsFilters, showModal}) => (
+const RegRequestsList = ({ id, go, vkUser, userInfo, regRequests, setFormData, regRequestsFilters, setRegRequestsFilters, showModal, processRegRequests}) => (
 	<Panel id={id}>
 		<PanelHeader left={<PanelHeaderBack onClick={go} data-to="adminview.lobby" />} >Заявки на привязку ЛС</PanelHeader>
 
 		{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
 		<Group header={<Header 
 			mode="secondary"
-			aside={<Link onClick={e => {
-				e.preventDefault();
-				showModal();
-			}}>Фильтры</Link>}
-			>
+			aside={
+				<Link onClick={e => {
+					e.preventDefault();
+					showModal();
+				}}>
+					<Icon24Filter />
+				</Link>
+			}>
 				Перечень заявок
 			</Header>}>
 			{regRequests &&
@@ -53,7 +57,7 @@ const RegRequestsList = ({ id, go, vkUser, userInfo, regRequests, setFormData, r
 								'Отклонена ') + (vkUser.id === parseInt(item.processed_by) ? 'вами' : 'пользователем ID' + item.processed_by)}
 						onClick={e => {
 							console.log('selected ' + e.currentTarget.dataset.request_id);
-							setFormData({request_id: e.currentTarget.dataset.request_id});
+							//setFormData({request_id: e.currentTarget.dataset.request_id});
 							go(e);
 						}}
 						>{'Заявка №' + item.id + ' от ' + item.request_date}</SimpleCell>
