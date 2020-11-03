@@ -20,11 +20,11 @@ import Icon24Spinner from '@vkontakte/icons/dist/24/spinner';
 const Welcome = ({ id, go, vkUser, userInfo, regInfo, setActiveRegRequest }) => (
 	<Panel id={id}>
 		<PanelHeader>Добро пожаловать!</PanelHeader>
-		<Div>
+{/* 		<Div>
 			<Title style={{color: "red"}} align="center" level="2" weight="semibold">Приложение работает в тестовом режиме!</Title>
 			<Title align="center" level="3" weight="regular">Переданные через данное приложение показания НЕ БУДУТ ДОСТАВЛЕНЫ в управляющую организацию.</Title>
 		</Div>
-		{regInfo &&
+ */}		{regInfo &&
 			<Div>
 				{regInfo.map(
 					({ id, acc_id, is_approved, rejection_reason }, index) => (

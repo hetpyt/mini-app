@@ -34,6 +34,11 @@ const RegRequestDetail = ({ id, go, vkUser, userInfo, activeRegRequest, formData
 
 	useEffect(() => {
 		console.log('useEffect activeRegRequest=', activeRegRequest);
+		if (activeRegRequest) {
+			let fdata = {...formData};
+			fdata.request_id = activeRegRequest.id;
+			setFormData(fdata);
+		}
 		if (activeRegRequest && activeRegRequest.selected_accounts) {
 			if (activeRegRequest.selected_accounts.length) {
 				console.log('useEffect.default=0');
