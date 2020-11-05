@@ -9,6 +9,7 @@ import Link from '@vkontakte/vkui/dist/components/Link/Link';
 import Div from '@vkontakte/vkui/dist/components/Div/Div';
 import Button from '@vkontakte/vkui/dist/components/Button/Button';
 import Icon28DocumentOutline from '@vkontakte/icons/dist/28/document_outline';
+import Icon24Download from '@vkontakte/icons/dist/24/download';
 const Help = props => (
     <Panel id={props.id}>
 		<PanelHeader
@@ -17,8 +18,10 @@ const Help = props => (
 			Помощь
 		</PanelHeader>
 		<List>
-			<Cell before={<Icon28DocumentOutline />}>
-				<Link href="https://vk.com/doc382795146_574957134" target="_blank">Инструкция по работе с приложением</Link>
+			<Cell before={<Icon28DocumentOutline />} multiline={true} indicator={
+				<Link href="/docs/vk-app_user_manual.pdf" target="_blank"><Icon24Download /></Link>
+			}>
+				Инструкция по работе с приложением (pdf)
 			</Cell>
 		</List>
         <Div>
