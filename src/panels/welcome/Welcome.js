@@ -71,6 +71,11 @@ const Welcome = ({ id, go, vkUser, userInfo, regInfo, setActiveRegRequest }) => 
 			</Button>
 		</Div>
 		}
+		<Div>
+			<Button size="xl" mode="primary" onClick={go} data-to="welcomeview.help">
+				Помощь
+			</Button>
+		</Div>
 		{userInfo && parseInt(userInfo.is_blocked) !== 0 &&
 		<Div>
 			<Caption level="1" weight="regular">Пользователь заблокирован в системе.</Caption>		
