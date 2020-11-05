@@ -11,6 +11,7 @@ import '@vkontakte/vkui/dist/vkui.css';
 
 import Welcome from './panels/welcome/Welcome';
 import RegistrationRequestActions from './panels/welcome/RegistrationRequestActions';
+import Help from './panels/welcome/Help';
 import Registration from './panels/registration/Registration';
 
 import AccountSelection from './panels/main/AccountSelection'
@@ -647,6 +648,7 @@ const App = () => {
                 <Welcome id='welcome' go={go} vkUser={vkUser} userInfo={userInfo} regInfo={regInfo} setActiveRegRequest={setActiveRegRequest} />
                 <ErrorService id='errorservice' go={go} error={error} />
                 <RegistrationRequestActions id='regrequest-actions' go={go} activeRegRequest={activeRegRequest} />
+                <Help id='help' go={go}/>
                 <StaticMessage id='no-accounts' go={go} message={'К учетной записи не привязано ни одного лицевого счета.'} />
             </View>
             <View id='registrationview' activePanel={activePanel}  popout={popout} >
