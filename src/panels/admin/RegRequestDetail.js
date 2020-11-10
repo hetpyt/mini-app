@@ -34,17 +34,23 @@ const RegRequestDetail = ({ id, go, vkUser, userInfo, activeRegRequest, formData
 
 	useEffect(() => {
 		console.log('useEffect activeRegRequest=', activeRegRequest);
+		let fdata = {...formData};
 		if (activeRegRequest) {
-			let fdata = {...formData};
 			fdata.request_id = activeRegRequest.id;
-			setFormData(fdata);
+			//setFormData(fdata);
 		}
 		if (activeRegRequest && activeRegRequest.selected_accounts) {
 			if (activeRegRequest.selected_accounts.length) {
 				console.log('useEffect.default=0');
+				//let fdata = {...formData};
+				fdata.account_id = activeRegRequest.selected_accounts[0].acc_id;
+				//setFormData(fdata);
+				//console.log('formdata=',fdata);
 				setAccIndex(0);
 			}
 		}
+		setFormData(fdata);
+		console.log('formdata=',fdata);
 	}, []);
 
 
