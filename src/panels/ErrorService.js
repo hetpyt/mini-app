@@ -16,7 +16,7 @@ const ErrorService = ({id, go, error}) => (
 		</PanelHeader>
         <Div>
             <Caption level="1" weight="heavy" >
-				{error ? ` Во время работы с сервисов возникла ошибка: ` + (typeof error === 'object' ? `[${error.name}] ${error.message}` : `${error}` )
+				{error ? ` Во время работы с сервисом возникла ошибка: ` + (typeof error === 'object' ? `[${error.name}] ${error.message}` : `${error}` )
 				: 'В настоящее время сервис недоступен. Повторите попытку позже.'}
 			</Caption>
         </Div>
