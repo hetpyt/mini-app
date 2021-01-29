@@ -669,7 +669,7 @@ const App = () => {
                 modal={<AdminModal activeModal={activeModal} setActiveModal={setActiveModal} regRequestsFilters={regRequestsFilters} setRegRequestsFilters={setRegRequestsFilters} onModalDone={onModalDone}/>}
             >
                 <ErrorService id='errorservice' go={go} error={error} />
-                <Lobby id='lobby' go={go} vkUser={vkUser} userInfo={userInfo} />
+                <Lobby id='lobby' go={go} vkUser={vkUser} userInfo={userInfo} restRequest={restRequest}/>
                 <RegRequestsList id='regrequests-list' go={go} vkUser={vkUser} userInfo={userInfo} setFormData={setFormData} regRequests={regRequests} 
                     regRequestsFilters={regRequestsFilters} setRegRequestsFilters={setRegRequestsFilters} showModal={showModal} processRegRequests={processRegRequests}
                 />
