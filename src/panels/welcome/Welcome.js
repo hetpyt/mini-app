@@ -17,72 +17,51 @@ import Icon24Report from '@vkontakte/icons/dist/24/report';
 import Icon24DismissSubstract from '@vkontakte/icons/dist/24/dismiss_substract';
 import Icon24Spinner from '@vkontakte/icons/dist/24/spinner';
 
-const Welcome = ({ id, go, vkUser, userInfo, regInfo, setActiveRegRequest }) => (
-	<Panel id={id}>
-		<PanelHeader>Добро пожаловать!</PanelHeader>
-{/* 		<Div>
-			<Title style={{color: "red"}} align="center" level="2" weight="semibold">Приложение работает в тестовом режиме!</Title>
-			<Title align="center" level="3" weight="regular">Переданные через данное приложение показания НЕ БУДУТ ДОСТАВЛЕНЫ в управляющую организацию.</Title>
-		</Div>
- */}		{regInfo &&
-			<Div>
-				{regInfo.map(
-					({ id, acc_id, is_approved, rejection_reason }, index) => (
-						<SimpleCell 
-							key={id} 
-							data-index={index}
-							data-to='regrequest-actions'
-							multiline={true} 
-							expandable={true}
-							text={'Номер заявки ' + id}
-							description={'Заявка №' + id + (is_approved === null ? ' ожидает проверки' : (parseInt(is_approved) === 0 ? ' отклонена по причине: ' + (rejection_reason === null ? 'причина не указана' : rejection_reason) : ' одобрена'))}
-							onClick={e => {
-								console.log('request_index=', e.currentTarget.dataset.index);
-								setActiveRegRequest(regInfo[e.currentTarget.dataset.index]);
-								go(e);
-							}}
-						>
-							Заявка на присоединение лицевого счета №{acc_id}
-						</SimpleCell>
-					)
-				)
-				}
-				<Caption level="2" weight="regular">По всем вопросам Вы можете обратиться используя контактные данные, указанные в Вашей квитанции.</Caption>
+const Welcome = ({ id, go, vkUser, userInfo, restRequest }) => { 
+	
+
+	return (
+		<Panel id={id}>
+			<PanelHeader>Добро пожаловать, {(vkUser ? vkUser.first_name : "Неизвестный")}!</PanelHeader>
+	{/* 		<Div>
+				<Title style={{color: "red"}} align="center" level="2" weight="semibold">Приложение работает в тестовом режиме!</Title>
+				<Title align="center" level="3" weight="regular">Переданные через данное приложение показания НЕ БУДУТ ДОСТАВЛЕНЫ в управляющую организацию.</Title>
 			</Div>
-		}
-		{userInfo && parseInt(userInfo.is_blocked) === 0  &&
-		<Div>
-			<Button size="xl" mode="primary" onClick={go} data-to="mainview.account-selection">
-				Перейти к вводу показаний
-			</Button>
-		</Div>
-		}
-		{(!userInfo || (userInfo && parseInt(userInfo.is_blocked) === 0)) &&
-		<Div>
-			<Button size="xl" mode="primary" onClick={go} data-to="registrationview.registration">
-				Присоединить лицевой счет
-			</Button>
-		</Div>
-		}
-		{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 && parseInt(userInfo.is_blocked) === 0  &&
-		<Div>
-			<Button size="xl" mode="primary" onClick={go} data-to="adminview.lobby">
-				Администрирование
-			</Button>
-		</Div>
-		}
-		<Div>
-			<Button size="xl" mode="primary" onClick={go} data-to="welcomeview.help">
-				Помощь
-			</Button>
-		</Div>
-		{userInfo && parseInt(userInfo.is_blocked) !== 0 &&
-		<Div>
-			<Caption level="1" weight="regular">Пользователь заблокирован в системе.</Caption>		
-		</Div>
-		}
-	</Panel>
-);
+	*/}		
+			{userInfo && parseInt(userInfo.is_blocked) === 0  &&
+			<Div>
+				<Button size="xl" mode="primary" onClick={go} data-to="mainview.account-selection">
+					Перейти к вводу показаний
+				</Button>
+			</Div>
+			}
+			{(!userInfo || (userInfo && parseInt(userInfo.is_blocked) === 0)) &&
+			<Div>
+				<Button size="xl" mode="primary" onClick={go} data-to="registrationview.registrationlist">
+					Присоединить лицевой счет
+				</Button>
+			</Div>
+			}
+			{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 && parseInt(userInfo.is_blocked) === 0  &&
+			<Div>
+				<Button size="xl" mode="primary" onClick={go} data-to="adminview.lobby">
+					Администрирование
+				</Button>
+			</Div>
+			}
+			<Div>
+				<Button size="xl" mode="primary" onClick={go} data-to="welcomeview.help">
+					Помощь
+				</Button>
+			</Div>
+			{userInfo && parseInt(userInfo.is_blocked) !== 0 &&
+			<Div>
+				<Caption level="1" weight="regular">Пользователь заблокирован в системе.</Caption>		
+			</Div>
+			}
+		</Panel>
+	)
+};
 
 Welcome.propTypes = {
 	id: PropTypes.string.isRequired,
