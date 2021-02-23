@@ -1,5 +1,5 @@
 import React from 'react';
-import View from '@vkontakte/vkui/dist/components/View/View';
+import { View } from '@vkontakte/vkui';
 
 import Registration from './panels/Registration';
 import RegistrationList from './panels/RegistrationList';

@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
-import PanelHeader from '@vkontakte/vkui/dist/components/PanelHeader/PanelHeader';
-import PanelHeaderBack from '@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack';
-import Button from '@vkontakte/vkui/dist/components/Button/Button';
-import Div from '@vkontakte/vkui/dist/components/Div/Div';
-import FormLayout from '@vkontakte/vkui/dist/components/FormLayout/FormLayout';
-import Input from '@vkontakte/vkui/dist/components/Input/Input';
-import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption';
-import Header from '@vkontakte/vkui/dist/components/Header/Header';
+import { Panel, PanelHeader, PanelHeaderBack, Button, FormLayout, FormItem, Input, Header } from '@vkontakte/vkui';
 
 
 const Registration = (props) => {
 
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState({
+		acc_id : '',
+		surname : '',
+		first_name : '',
+		patronymic : '',
+		street : '',
+		n_dom : '',
+		n_kv : '',
+		secret_code : ''
+	});
 
 	const on_change = (e) => {
 			let fData= {...formData};
@@ -22,11 +23,16 @@ const Registration = (props) => {
 
 	const confirm = (e) => {
 		console.log('formdata=', formData);
+		if (!(formData.acc_id && formData.secret_code)) {
+			return;
+		}
+
 		props.session.restRequest(
 			"regrequests/add",
-			formData,
+			{registration_data : formData},
 			(res) => {
-				props.session.go();
+				console.log('res=', res);
+				//props.session.go();
 			}
 		)
 	};
@@ -36,14 +42,30 @@ const Registration = (props) => {
 			<PanelHeader left={<PanelHeaderBack onClick={props.session.go} data-to="registrationlist" />}>Запрос на присоединение ЛС</PanelHeader>
 			<FormLayout>
 				<Header mode="secondary">Заполните данные абонента</Header>
-				<Input type="text" required top="Номер лицевого счета" name="acc_id" onChange={on_change} />
-				<Input type="text" required top="Фамилия" name="surname" onChange={on_change} />
-				<Input type="text" required top="Имя" name="first_name" onChange={on_change} />
-				<Input type="text" top="Отчество" name="patronymic" onChange={on_change} />
-				<Input type="text" required top="Улица" name="street" onChange={on_change} />
-				<Input type="text" required top="Дом" name="n_dom" onChange={on_change} />
-				<Input type="number" top="Квартира" name="n_kv" onChange={on_change} />
-				<Input type="number" required top="Проверочный код с квитанции" name="secret_code" onChange={on_change} />
+				<FormItem status={formData.acc_id ? 'valid' : 'error'}>
+					<Input type="text" required top="Номер лицевого счета" name="acc_id" onChange={on_change} />
+				</FormItem>
+				<FormItem>
+					<Input type="text" top="Фамилия" name="surname" onChange={on_change} />
+				</FormItem>
+				<FormItem>
+					<Input type="text" top="Имя" name="first_name" onChange={on_change} />
+				</FormItem>
+				<FormItem>
+					<Input type="text" top="Отчество" name="patronymic" onChange={on_change} />
+				</FormItem>
+				<FormItem>
+					<Input type="text" top="Улица" name="street" onChange={on_change} />
+				</FormItem>
+				<FormItem>
+					<Input type="text" top="Дом" name="n_dom" onChange={on_change} />
+				</FormItem>
+				<FormItem>
+					<Input type="number" top="Квартира" name="n_kv" onChange={on_change} />
+				</FormItem>
+				<FormItem status={formData.secret_code ? 'valid' : 'error'}>
+					<Input type="number" required top="Проверочный код с квитанции" name="secret_code" onChange={on_change} />
+				</FormItem>
 				<Button size="xl" mode="primary" onClick={confirm} data-to="registrationlist">
 					Отправить
 				</Button>

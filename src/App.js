@@ -10,9 +10,8 @@ import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenS
 import '@vkontakte/vkui/dist/vkui.css';
 
 import Welcome from './panels/welcome/Welcome';
-import ErrorService from './panels/ErrorService';
 
-
+import ErrorServiceView from './errorservice/ErrorServiceView';
 import RegistrationView from './registration/RegistrationView';
 
 const App = () => {
@@ -101,6 +100,7 @@ const App = () => {
         let options = {
             prefixUrl: '/api',
             mode: 'no-cors',
+            throwHttpErrors : true,
             searchParams: {
                 user_id: vkUser.id,
                 token: getToken(),
@@ -119,7 +119,7 @@ const App = () => {
 
         } catch (e) {
             setError(e);
-            setActiveTarget('welcomeview.errorservice');
+            setActiveTarget('errorserviceview.errorservice');
 
         } finally {
             setDataFetching(false);
@@ -163,16 +163,16 @@ const App = () => {
         restRequest : restRequest,
         vkUser : vkUser,
         userInfo : userInfo,
+        error : error,
     }; 
 
 	return (
         <Root id='root' activeView={activeView} >
             <View id='welcomeview' activePanel={activePanel}  popout={popout} >
                 <Welcome id='welcome' go={go} vkUser={vkUser} userInfo={userInfo} restRequest={restRequest} />
-                <ErrorService id='errorservice' go={go} error={error} />
-
             </View>
             <RegistrationView id='registrationview' activePanel={activePanel}  popout={popout} session={commonProps} />
+            <ErrorServiceView id='errorserviceview' activePanel={activePanel}  popout={popout} session={commonProps} />
         </Root>
 	);
 };

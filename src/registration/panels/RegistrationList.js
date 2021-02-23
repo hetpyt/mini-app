@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-import Panel from '@vkontakte/vkui/dist/components/Panel/Panel';
-import PanelHeader from '@vkontakte/vkui/dist/components/PanelHeader/PanelHeader';
-import PanelHeaderBack from '@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack';
-import Button from '@vkontakte/vkui/dist/components/Button/Button';
-
-import Cell from '@vkontakte/vkui/dist/components/Cell/Cell';
-import List from '@vkontakte/vkui/dist/components/List/List';
-import Div from '@vkontakte/vkui/dist/components/Div/Div';
-import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption';
+import { Panel, PanelHeader, PanelHeaderBack, Button, Cell, List, Div, Caption } from '@vkontakte/vkui';
 
 
 const RegistrationList = (props) => {
@@ -58,7 +49,7 @@ const RegistrationList = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={props.session.go} data-to="welcomeview.welcome" />}>Список заявок на присоединения лицевого счета</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={props.session.go} data-to="welcomeview.welcome" />}>Список заявок на присоединение лицевого счета</PanelHeader>
 
 			{userInfo && parseInt(userInfo.is_blocked) === 0  &&
 			<Div>
