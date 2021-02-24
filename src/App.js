@@ -13,6 +13,7 @@ import Welcome from './panels/welcome/Welcome';
 
 import ErrorServiceView from './errorservice/ErrorServiceView';
 import RegistrationView from './registration/RegistrationView';
+import { isObject } from '@vkontakte/vkjs';
 
 const App = () => {
     const spinner = <ScreenSpinner size='large' />;
@@ -20,6 +21,8 @@ const App = () => {
     const [appParams, _] = useState((() => {
         return new URLSearchParams(window.location.search);
     })());
+
+    const [route, setRoute] = useState([]);
 
     const [activeView, setActiveView] = useState('welcomeview');
     const [activePanel, setActivePanel] = useState('welcome');
@@ -94,7 +97,7 @@ const App = () => {
         return window["servertokenname_7524946"];// + appParams.get('vk_app_id')];
     }
   
-    async function restRequest(uri, json_data = null, on_done = null) {
+    async function restRequest(uri, json_data = null, on_done = null, on_error = null) {
         console.log('restRequest(' + uri + ')');
         setDataFetching(true);
         let options = {
@@ -110,12 +113,9 @@ const App = () => {
             options.method = 'post';
             options.json = json_data;
         }
+        let result = null;
         try {
-            let result = await ky(uri, options).json();
-
-            console.log('restRequest(', uri, ').result=', result);
-
-            if (typeof on_done == 'function') on_done(result);
+            result = await ky(uri, options).json();
 
         } catch (e) {
             setError(e);
@@ -124,6 +124,24 @@ const App = () => {
         } finally {
             setDataFetching(false);
         }
+        console.log('restRequest(', uri, ').result=', result);
+
+        //try {
+            if (isObject(result)) {
+                if (result.hasOwnProperty('error')) {
+                    if (typeof on_error == 'function') on_error(result.error);
+                } else if (result.hasOwnProperty('result')){
+                    if (typeof on_done == 'function') on_done(result.result);
+                } else {
+                    throw new Error("Получен неожиданный ответ от сервера [1]");
+                }
+            } else {
+                throw new Error("Получен неожиданный ответ от сервера [2]");
+            }
+        //} catch (e) {
+        //    setError(e);
+        //    setActiveTarget('errorserviceview.errorservice');
+        //}
     }
 
 	const go = e => {
@@ -132,8 +150,16 @@ const App = () => {
         console.log('targetView=', targetView);
         console.log('targetPanel=', targetPanel);
 
+        setRoute([...route, "" + activeView + "." + activePanel]);
         setActiveTarget(target);
-	};
+	}
+
+    const goBack = e => {
+        let r = [...route];
+        let target = r.pop();
+        setRoute([...r]);
+        if (target) setActiveTarget(target);
+    }
 
     const parseTo = valTo => {
         const target = valTo.split('.');
@@ -160,6 +186,7 @@ const App = () => {
 
     let commonProps = {
         go : go,
+        goBack : goBack,
         restRequest : restRequest,
         vkUser : vkUser,
         userInfo : userInfo,

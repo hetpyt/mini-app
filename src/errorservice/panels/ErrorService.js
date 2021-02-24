@@ -16,7 +16,7 @@ const ErrorService = (props) => (
 			</Caption>
         </Div>
         <Div>
-			<Button size="xl" mode="primary" onClick={props.session.go} data-to="welcomeview.welcome">
+			<Button size="l" mode="primary" stretched={true} onClick={props.session.go} data-to="welcomeview.welcome">
 				В начало
 			</Button>
 		</Div>

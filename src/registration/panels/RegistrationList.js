@@ -40,7 +40,7 @@ const RegistrationList = (props) => {
 			}
 
 			return (
-				<Button size="xl" mode="primary" onClick={props.session.go} data-to="registration">
+				<Button size="l" mode="primary" stretched={true} onClick={props.session.go} data-to="registration">
 					Создать заявку
 				</Button>
 			);
@@ -49,7 +49,7 @@ const RegistrationList = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={props.session.go} data-to="welcomeview.welcome" />}>Список заявок на присоединение лицевого счета</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={props.session.goBack} data-to="welcomeview.welcome" />}>Список заявок на присоединение лицевого счета</PanelHeader>
 
 			{userInfo && parseInt(userInfo.is_blocked) === 0  &&
 			<Div>
