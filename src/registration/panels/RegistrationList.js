@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Panel, PanelHeader, PanelHeaderBack, Button, Cell, List, Div, Caption } from '@vkontakte/vkui';
-
+import { Panel, PanelHeader, PanelHeaderBack, Button, RichCell, List, Div, Caption } from '@vkontakte/vkui';
+import { Icon28CheckCircleFill, Icon28CancelCircleFillRed, Icon28ClockCircleFillGray } from '@vkontakte/icons';
 
 const RegistrationList = (props) => {
 
 	const [regInfo, setRegInfo] = useState(null);
 
     useEffect(() => {
-		props.session.restRequest('regrequests/list', null, res => {
-            setRegInfo(res);
-        });
+		props.session.restRequest(
+			'regrequests/list',
+			null,
+			res => {
+            	setRegInfo(res);
+        	},
+			err => {
+				console.log('err=', err);
+			}
+		);
     }, []);
 
 	const userInfo = props.session.userInfo;
@@ -58,29 +65,38 @@ const RegistrationList = (props) => {
 			}
 
 			{regInfo &&
+			<Div>
 				<List>
 					{regInfo.map(
-						({ id, acc_id, is_approved, rejection_reason }, index) => (
-							<Cell 
+						({ id, acc_id, is_approved, rejection_reason, request_date }, index) => (
+							<RichCell 
 								key={id} 
 								data-index={index}
 								data-to='registration'
 								multiline={true} 
-								expandable={true}
-								text={'Номер заявки ' + id}
-								description={'Заявка ' + (is_approved === null ? 'ожидает проверки' : (parseInt(is_approved) === 0 ? 'отклонена по причине: ' + (rejection_reason === null ? 'причина не указана' : rejection_reason) : ' одобрена'))}
-								onClick={e => {
-									console.log('request_index=', e.currentTarget.dataset.index);
-									//setActiveRegRequest(regInfo[e.currentTarget.dataset.index]);
-									props.session.go(e);
-								}}
+								disabled={true}
+								text={'на присоединение лицевого счета № ' + acc_id}
+								caption={''
+								+ (is_approved === null 
+									? 'ожидает проверки' 
+									: (parseInt(is_approved) === 0 
+										? 'отклонена по причине: ' 
+										+ (rejection_reason === null 
+											? 'причина не указана' 
+											: rejection_reason) 
+										: ' одобрена'))}
+								after={(is_approved === null 
+									? <Icon28ClockCircleFillGray/> 
+									: (parseInt(is_approved) === 1 
+										? <Icon28CheckCircleFill/> 
+										: <Icon28CancelCircleFillRed/>))}
 							>
-								Заявка на присоединение лицевого счета №{acc_id}
-							</Cell>
+								Заявка №{id} от {request_date}
+							</RichCell>
 						)
-					)
-					}
+					)}
 				</List>
+			</Div>
 			}
 
 			<Div>

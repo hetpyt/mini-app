@@ -9,11 +9,12 @@ import View from '@vkontakte/vkui/dist/components/View/View';
 import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
 import '@vkontakte/vkui/dist/vkui.css';
 
-import Welcome from './panels/welcome/Welcome';
-
+import WelcomeView from './welcome/WelcomeView';
 import ErrorServiceView from './errorservice/ErrorServiceView';
 import RegistrationView from './registration/RegistrationView';
-import { isObject } from '@vkontakte/vkjs';
+import IndicationsView from './indications/IndicationsView';
+
+import { isFunction, isObject, isString } from '@vkontakte/vkjs';
 
 const App = () => {
     const spinner = <ScreenSpinner size='large' />;
@@ -93,6 +94,10 @@ const App = () => {
         else setPopout(null);
     }, [dataFetchig]);
 
+    useEffect(() => {
+        if (error) go('errorserviceview.errorservice');
+    }, [error]);
+
     const getToken = () => {
         return window["servertokenname_7524946"];// + appParams.get('vk_app_id')];
     }
@@ -119,7 +124,7 @@ const App = () => {
 
         } catch (e) {
             setError(e);
-            setActiveTarget('errorserviceview.errorservice');
+            //setActiveTarget('errorserviceview.errorservice');
 
         } finally {
             setDataFetching(false);
@@ -129,9 +134,11 @@ const App = () => {
         //try {
             if (isObject(result)) {
                 if (result.hasOwnProperty('error')) {
-                    if (typeof on_error == 'function') on_error(result.error);
+                    if (isFunction(on_error)) 
+                        on_error(result.error);
                 } else if (result.hasOwnProperty('result')){
-                    if (typeof on_done == 'function') on_done(result.result);
+                    if (isFunction(on_done)) 
+                        on_done(result.result);
                 } else {
                     throw new Error("Получен неожиданный ответ от сервера [1]");
                 }
@@ -145,7 +152,11 @@ const App = () => {
     }
 
 	const go = e => {
-        let target = e.currentTarget.dataset.to;
+        let target = null;
+        if (isString(e)) 
+            target = e;
+        else 
+            target = e.currentTarget.dataset.to;
         let {targetView, targetPanel} = parseTo(target);
         console.log('targetView=', targetView);
         console.log('targetPanel=', targetPanel);
@@ -195,10 +206,9 @@ const App = () => {
 
 	return (
         <Root id='root' activeView={activeView} >
-            <View id='welcomeview' activePanel={activePanel}  popout={popout} >
-                <Welcome id='welcome' go={go} vkUser={vkUser} userInfo={userInfo} restRequest={restRequest} />
-            </View>
+            <WelcomeView id='welcomeview' activePanel={activePanel}  popout={popout} session={commonProps} />
             <RegistrationView id='registrationview' activePanel={activePanel}  popout={popout} session={commonProps} />
+            <IndicationsView id='indicationsview' activePanel={activePanel}  popout={popout} session={commonProps} />
             <ErrorServiceView id='errorserviceview' activePanel={activePanel}  popout={popout} session={commonProps} />
         </Root>
 	);

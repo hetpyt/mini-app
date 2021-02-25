@@ -1,27 +1,91 @@
 import React, { useState, useEffect } from 'react';
 import { Panel, PanelHeader, PanelHeaderBack, Button, FormLayout, FormLayoutGroup, FormItem, FormStatus, Input, Header } from '@vkontakte/vkui';
 
+import Form from './../../Form/Form';
+import { isObject } from '@vkontakte/vkjs';
 
 const Registration = (props) => {
 
-    const [formData, setFormData] = useState({
-		acc_id : '',
-		surname : '',
-		first_name : '',
-		patronymic : '',
-		street : '',
-		n_dom : '',
-		n_kv : '',
-		secret_code : ''
-	});
+	const on_change = (e) => {
+		let fData= {...formData};
+		fData[e.currentTarget.name] = e.currentTarget.value;
+		setFormData(fData);
+	};
+
+
+	const formStruct = () => {
+		return [
+			{
+				name : 'acc_id',
+				type : 'text',
+				top : 'Номер лицевого счета',
+				required : true,
+				onChange : on_change
+			},
+			{
+				name : 'surname',
+				type : 'text',
+				top : 'Фамилия',
+				required : true,
+				onChange : on_change
+			},
+			{
+				name : 'first_name',
+				type : 'text',
+				top : 'Имя',
+				required : true,
+				onChange : on_change
+			},
+			{
+				name : 'patronymic',
+				type : 'text',
+				top : 'Отчетство',
+				required : false,
+				onChange : on_change
+			},
+			{
+				name : 'street',
+				type : 'text',
+				top : 'Улица',
+				required : true,
+				onChange : on_change
+			},
+			{
+				name : 'n_dom',
+				type : 'text',
+				top : 'Дом',
+				required : true,
+				onChange : on_change
+			},
+			{
+				name : 'n_kv',
+				type : 'text',
+				top : 'Квартира',
+				required : false,
+				onChange : on_change
+			},
+			{
+				name : 'secret_code',
+				type : 'text',
+				top : 'Проверочный код с квитанции',
+				required : true,
+				onChange : on_change
+			},
+
+
+		];
+	}
+
+    const [formData, setFormData] = useState(((struct) => {
+		let data = {};
+		for(let i=0; i < struct.length; i++) {
+			data[struct[i].name] = null;
+		}
+		return data;
+	})(formStruct())
+	);
 
 	const [formError, setFormError] = useState(null);
-
-	const on_change = (e) => {
-			let fData= {...formData};
-			fData[e.currentTarget.name] = e.currentTarget.value;
-			setFormData(fData);
-	};
 
 	const confirm = (e) => {
 		console.log('formdata=', formData);
@@ -35,7 +99,7 @@ const Registration = (props) => {
 		} else {
 			setFormError({
 				header : "Ошибка заполнения формы",
-				text : "Не заполнен один или несколько обязательных полей"
+				text : "Не заполнено одно или несколько обязательных полей"
 			});
 			return;
 		}
@@ -51,89 +115,48 @@ const Registration = (props) => {
 			(err) => {
 				console.log('err=', err);
 				setFormError({
-					header : "Ошибка обрботки формы",
+					header : "Ошибка обработки формы",
 					text : err.message
 				});
 			}
 		)
 	};
 
+	const regInfo = props.regrequest;
+	const readOnly = isObject(regInfo);
+
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={props.session.goBack} data-to="registrationlist" />}>Запрос на присоединение ЛС</PanelHeader>
-			<FormLayout>
-				<Header mode="secondary">Заполните данные лицевого счета</Header>
-
-				{formError &&
+			<PanelHeader left={<PanelHeaderBack onClick={props.session.goBack} />}>Заявка на присоединение ЛС</PanelHeader>
+				
+			<Form 
+				header={<Header mode="secondary">{regInfo ? "Заявка №" + regInfo.id + " от " + regInfo.request_date : "Заполните данные лицевого счета"}</Header>}
+				status={formError &&
 					<FormItem>
 						<FormStatus header={formError.header} mode="error">
 							{formError.text}
 						</FormStatus>
 					</FormItem>
 				}
-				<FormItem top="Номер лицевого счета" 
-				status={formData.acc_id ? 'valid' : 'error'}
-				bottom={formData.acc_id ? '' : 'Введите номер лицевого счета'}
-				>
-					<Input type="text" name="acc_id" onChange={on_change} />
-				</FormItem>
+				buttons={
+					<FormLayoutGroup mode="horizontal">
+						<FormItem>
+							<Button size="l" mode="primary" stretched={true} onClick={confirm}>
+								Отправить
+							</Button>
+						</FormItem>
+						<FormItem>
+							<Button size="l" mode="destructive" stretched={true} onClick={props.session.goBack} >
+								Отмена
+							</Button>
+						</FormItem>
+					</FormLayoutGroup>
+				}
+				fields={formStruct()}
+				values={regInfo ? regInfo : formData}
+				readOnly={readOnly}
+			/>
 
-				<FormItem top="Фамилия"
-				status={formData.surname ? 'valid' : 'error'}
-				bottom={formData.surname ? '' : 'Введите фамилию ответственного квартиросъемщика'}
-				>
-					<Input type="text" name="surname" onChange={on_change} />
-				</FormItem>
-
-				<FormItem top="Имя"
-				status={formData.first_name ? 'valid' : 'error'}
-				bottom={formData.first_name ? '' : 'Введите имя ответственного квартиросъемщика'}
-				>
-					<Input type="text" name="first_name" onChange={on_change} />
-				</FormItem>
-
-				<FormItem top="Отчество">
-					<Input type="text" name="patronymic" onChange={on_change} />
-				</FormItem>
-
-				<FormItem top="Улица"
-				status={formData.street ? 'valid' : 'error'}
-				bottom={formData.street ? '' : 'Введите улицу'}
-				>
-					<Input type="text" top="Улица" name="street" onChange={on_change} />
-				</FormItem>
-
-				<FormItem top="Дом"
-				status={formData.n_dom ? 'valid' : 'error'}
-				bottom={formData.n_dom ? '' : 'Введите номер дома'}
-				>
-					<Input type="text" top="Дом" name="n_dom" onChange={on_change} />
-				</FormItem>
-
-				<FormItem top="Квартира">
-					<Input type="number" top="Квартира" name="n_kv" onChange={on_change} />
-				</FormItem>
-
-				<FormItem top="Проверочный код с квитанции" 
-				status={formData.secret_code ? 'valid' : 'error'}
-				bottom={formData.secret_code ? '' : 'Введите проверочный код с квитанции'}
-				>
-					<Input type="number"  name="secret_code" onChange={on_change} />
-				</FormItem>
-
-				<FormLayoutGroup mode="horizontal">
-					<FormItem>
-						<Button size="l" mode="primary" stretched={true} onClick={confirm} data-to="registrationlist">
-							Отправить
-						</Button>
-					</FormItem>
-					<FormItem>
-						<Button size="l" mode="destructive" stretched={true} onClick={props.session.go} data-to="registrationlist">
-							Отмена
-						</Button>
-					</FormItem>
-				</FormLayoutGroup>
-			</FormLayout>
 		</Panel>
 	);
 };
