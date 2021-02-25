@@ -36,9 +36,9 @@ const AccountsList = (props) => {
                                 data-index={index} 
                                 data-to='indicationsinput'
                                 onClick={e => {
-                                    console.log('active_acc=', accList[e.currentTarget.dataset.index];
+                                    console.log('active_acc=', accList[e.currentTarget.dataset.index]);
                                     props.setAccount(accList[e.currentTarget.dataset.index]);
-                                    go(e);
+                                    props.session.go(e);
                                 }
                             }>
                                 {acc.address_repr}

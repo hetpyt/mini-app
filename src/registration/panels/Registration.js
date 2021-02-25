@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Panel, PanelHeader, PanelHeaderBack, Button, FormLayout, FormLayoutGroup, FormItem, FormStatus, Input, Header } from '@vkontakte/vkui';
 
 import Form from './../../Form/Form';
+
 import { isObject } from '@vkontakte/vkjs';
 
 const Registration = (props) => {
@@ -155,6 +156,7 @@ const Registration = (props) => {
 				fields={formStruct()}
 				values={regInfo ? regInfo : formData}
 				readOnly={readOnly}
+				itemComponent={null}
 			/>
 
 		</Panel>
