@@ -7,13 +7,6 @@ import { isObject } from '@vkontakte/vkjs';
 
 const Registration = (props) => {
 
-	const on_change = (e) => {
-		let fData= {...formData};
-		fData[e.currentTarget.name] = e.currentTarget.value;
-		setFormData(fData);
-	};
-
-
 	const formStruct = () => {
 		return [
 			{
@@ -21,90 +14,66 @@ const Registration = (props) => {
 				type : 'text',
 				top : 'Номер лицевого счета',
 				required : true,
-				onChange : on_change
+				minLength : 3,
+				errMessage : "Заполните обязательный реквизит (мин. 3 символа)",
 			},
 			{
 				name : 'surname',
 				type : 'text',
 				top : 'Фамилия',
 				required : true,
-				onChange : on_change
 			},
 			{
 				name : 'first_name',
 				type : 'text',
 				top : 'Имя',
 				required : true,
-				onChange : on_change
 			},
 			{
 				name : 'patronymic',
 				type : 'text',
 				top : 'Отчетство',
 				required : false,
-				onChange : on_change
 			},
 			{
 				name : 'street',
 				type : 'text',
 				top : 'Улица',
 				required : true,
-				onChange : on_change
 			},
 			{
 				name : 'n_dom',
 				type : 'text',
 				top : 'Дом',
 				required : true,
-				onChange : on_change
 			},
 			{
 				name : 'n_kv',
 				type : 'text',
 				top : 'Квартира',
 				required : false,
-				onChange : on_change
 			},
 			{
 				name : 'secret_code',
-				type : 'text',
+				type : 'number',
 				top : 'Проверочный код с квитанции',
 				required : true,
-				onChange : on_change
+				minLength : 3,
+				errMessage : "Заполните обязательный реквизит (мин. 3 символа)",
 			},
-
+			{
+				name : 'ppd_confirm',
+				type : 'checkbox',
+				top : 'Я даю согласие на обработку и хранение передаваемых мною персональных данных, бла бла бла...',
+				required : true,
+				errMessage : "для продолжения необходимо дать согласие на обработку ПДн"
+			},
 
 		];
 	}
 
-    const [formData, setFormData] = useState(((struct) => {
-		let data = {};
-		for(let i=0; i < struct.length; i++) {
-			data[struct[i].name] = null;
-		}
-		return data;
-	})(formStruct())
-	);
-
-	const [formError, setFormError] = useState(null);
-
-	const confirm = (e) => {
-		console.log('formdata=', formData);
-		if (formData.acc_id 
-		&& formData.surname
-		&& formData.first_name
-		&& formData.street
-		&& formData.n_dom
-		&& formData.secret_code) {
-			setFormError(null);
-		} else {
-			setFormError({
-				header : "Ошибка заполнения формы",
-				text : "Не заполнено одно или несколько обязательных полей"
-			});
-			return;
-		}
-
+	const confirm = (formData) => {
+		console.log('Registration.formdata=', formData);
 		props.session.restRequest(
 			"regrequests/add",
 			{registration_data : formData},
@@ -115,10 +84,7 @@ const Registration = (props) => {
 			},
 			(err) => {
 				console.log('err=', err);
-				setFormError({
-					header : "Ошибка обработки формы",
-					text : err.message
-				});
+				props.session.goBack();
 			}
 		)
 	};
@@ -132,31 +98,11 @@ const Registration = (props) => {
 				
 			<Form 
 				header={<Header mode="secondary">{regInfo ? "Заявка №" + regInfo.id + " от " + regInfo.request_date : "Заполните данные лицевого счета"}</Header>}
-				status={formError &&
-					<FormItem>
-						<FormStatus header={formError.header} mode="error">
-							{formError.text}
-						</FormStatus>
-					</FormItem>
-				}
-				buttons={
-					<FormLayoutGroup mode="horizontal">
-						<FormItem>
-							<Button size="l" mode="primary" stretched={true} onClick={confirm}>
-								Отправить
-							</Button>
-						</FormItem>
-						<FormItem>
-							<Button size="l" mode="destructive" stretched={true} onClick={props.session.goBack} >
-								Отмена
-							</Button>
-						</FormItem>
-					</FormLayoutGroup>
-				}
 				fields={formStruct()}
-				values={regInfo ? regInfo : formData}
 				readOnly={readOnly}
 				itemComponent={null}
+				onConfirm={confirm}
+				onCancel={props.session.goBack}
 			/>
 
 		</Panel>
