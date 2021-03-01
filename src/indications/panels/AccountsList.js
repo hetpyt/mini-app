@@ -9,7 +9,7 @@ const AccountsList = (props) => {
 	const [accList, setAccList] = useState(null);
 
     useEffect(() => {
-		props.session.restRequest(
+		props.app.restRequest(
             'accounts/list',
             null,
             res => {
@@ -23,7 +23,7 @@ const AccountsList = (props) => {
 
     return (
         <Panel id={props.id}>
-            <PanelHeader left={<PanelHeaderBack onClick={props.session.goBack} />}>Список лицевых счетов</PanelHeader>
+            <PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} />}>Список лицевых счетов</PanelHeader>
             <Group>
                 <Header mode='secondary'>Выберите лицевой счет</Header>
                 {accList && accList.map((acc, index) => (
@@ -38,7 +38,7 @@ const AccountsList = (props) => {
                                 onClick={e => {
                                     console.log('active_acc=', accList[e.currentTarget.dataset.index]);
                                     props.setAccount(accList[e.currentTarget.dataset.index]);
-                                    props.session.go(e);
+                                    props.app.go(e);
                                 }
                             }>
                                 {acc.address_repr}

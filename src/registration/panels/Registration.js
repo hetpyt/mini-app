@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Panel, PanelHeader, PanelHeaderBack, Button, FormLayout, FormLayoutGroup, FormItem, FormStatus, Input, Header } from '@vkontakte/vkui';
+import { Panel, PanelHeader, PanelHeaderBack, Header, Alert } from '@vkontakte/vkui';
 
 import Form from './../../Form/Form';
 
@@ -74,35 +74,39 @@ const Registration = (props) => {
 
 	const confirm = (formData) => {
 		console.log('Registration.formdata=', formData);
-		props.session.restRequest(
+
+		props.app.restRequest(
 			"regrequests/add",
-			{registration_data : formData},
+			{registration_data : formData.reduce(
+				(obj, field) => {
+					obj[field.name] = field.value;
+					return obj;
+				},
+				{}
+			)},
 			(res) => {
 				console.log('res=', res);
 
-				props.session.goBack();
+				props.app.goBack();
 			},
 			(err) => {
 				console.log('err=', err);
-				props.session.goBack();
+				props.app.inform_alert("Ошибка обработки запроса", err.message + " [" + err.code + "]");
+				//props.app.goBack();
 			}
 		)
 	};
 
-	const regInfo = props.regrequest;
-	const readOnly = isObject(regInfo);
-
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={props.session.goBack} />}>Заявка на присоединение ЛС</PanelHeader>
-				
+			<PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} />}>Заявка на присоединение ЛС</PanelHeader>
 			<Form 
-				header={<Header mode="secondary">{regInfo ? "Заявка №" + regInfo.id + " от " + regInfo.request_date : "Заполните данные лицевого счета"}</Header>}
+				header={<Header mode="secondary">Заполните данные лицевого счета</Header>}
 				fields={formStruct()}
-				readOnly={readOnly}
+				readOnly={false}
 				itemComponent={null}
 				onConfirm={confirm}
-				onCancel={props.session.goBack}
+				onCancel={props.app.goBack}
 			/>
 
 		</Panel>

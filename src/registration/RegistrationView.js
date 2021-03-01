@@ -16,8 +16,8 @@ const RegistrationView = (props) => {
 
 	return (
         <View id={props.id} activePanel={props.activePanel}  popout={props.popout} >
-            <RegistrationList id='registrationlist' setRegrequest={setRegrequest} session={props.session} />
-            <Registration id='registration' regrequest={regrequest} session={props.session} />
+            <RegistrationList id='registrationlist' setRegrequest={setRegrequest} app={props.app} />
+            <Registration id='registration' regrequest={regrequest} app={props.app} />
         </View>
     );
 }

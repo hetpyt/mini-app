@@ -8,7 +8,7 @@ const WelcomeView = (props) => {
 
 	return (
         <View id={props.id} activePanel={props.activePanel} popout={props.popout} >
-            <Welcome id='welcome' session={props.session} />
+            <Welcome id='welcome' app={props.app} />
         </View>
     );
 }

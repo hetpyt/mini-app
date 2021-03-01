@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FormItem, Input, Div, FormLayoutGroup, Group, Header } from '@vkontakte/vkui';
 
-const FormDblInput = (props) => { 
+const FormIndicationsInput = (props) => { 
 
     //console.log('FormInput.props=', props);
 	return (
@@ -16,7 +16,7 @@ const FormDblInput = (props) => {
                         <Input type="text" name={"current_" + props.name} disabled={true} value={props.staticValue} />							
                     </FormItem>
                     <FormItem top="новые">
-                        <Input type={props.type} name={props.name} disabled={false} placeholder={props.defaultValue} onChange={props.onChange} />							
+                        <Input type="number" min={0} name={props.name} disabled={false} placeholder={props.defaultValue} onChange={props.onChange} />							
                     </FormItem>
                 </FormLayoutGroup>
             </Group>
@@ -24,4 +24,4 @@ const FormDblInput = (props) => {
     );
 }
 
-export default FormDblInput;
+export default FormIndicationsInput;

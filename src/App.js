@@ -4,9 +4,7 @@ import { saveAs } from 'file-saver';
 import 'url-search-params-polyfill';
 
 import bridge from '@vkontakte/vk-bridge';
-import Root from '@vkontakte/vkui/dist/components/Root/Root';
-import View from '@vkontakte/vkui/dist/components/View/View';
-import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
+import { Root, ScreenSpinner, Alert } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 
 import WelcomeView from './welcome/WelcomeView';
@@ -103,8 +101,8 @@ const App = () => {
     }
   
     async function restRequest(uri, json_data = null, on_done = null, on_error = null) {
-        console.log('restRequest(' + uri + ')');
-        setDataFetching(true);
+        console.log('restRequest(' + uri + ').json_data=', json_data);
+        //setDataFetching(true);
         let options = {
             prefixUrl: '/api',
             mode: 'no-cors',
@@ -120,14 +118,17 @@ const App = () => {
         }
         let result = null;
         try {
+            setPopout(spinner);
             result = await ky(uri, options).json();
 
         } catch (e) {
             setError(e);
             //setActiveTarget('errorserviceview.errorservice');
+            return;
 
         } finally {
-            setDataFetching(false);
+            //setDataFetching(false);
+            setPopout(null);
         }
         console.log('restRequest(', uri, ').result=', result);
 
@@ -150,6 +151,24 @@ const App = () => {
         //    setActiveTarget('errorserviceview.errorservice');
         //}
     }
+
+	const inform_alert = (header, message, onClose) => {
+		setPopout(
+			<Alert
+				actions={[
+					{
+						title: 'ОK',
+						autoclose: true,
+						mode: 'cancel'
+					}
+				]}
+				actionsLayout="vertical"
+				onClose={isFunction(onClose) ? onClose : (() => {setPopout(null)})}
+				header={header}
+				text={message}
+			/>
+		);
+	}
 
 	const go = e => {
         let target = null;
@@ -196,9 +215,11 @@ const App = () => {
     }
 
     let commonProps = {
+        inform_alert : inform_alert,
         go : go,
         goBack : goBack,
         restRequest : restRequest,
+        setPopout : setPopout,
         vkUser : vkUser,
         userInfo : userInfo,
         error : error,
@@ -206,10 +227,10 @@ const App = () => {
 
 	return (
         <Root id='root' activeView={activeView} >
-            <WelcomeView id='welcomeview' activePanel={activePanel}  popout={popout} session={commonProps} />
-            <RegistrationView id='registrationview' activePanel={activePanel}  popout={popout} session={commonProps} />
-            <IndicationsView id='indicationsview' activePanel={activePanel}  popout={popout} session={commonProps} />
-            <ErrorServiceView id='errorserviceview' activePanel={activePanel}  popout={popout} session={commonProps} />
+            <WelcomeView id='welcomeview' activePanel={activePanel}  popout={popout} app={commonProps} />
+            <RegistrationView id='registrationview' activePanel={activePanel}  popout={popout} app={commonProps} />
+            <IndicationsView id='indicationsview' activePanel={activePanel}  popout={popout} app={commonProps} />
+            <ErrorServiceView id='errorserviceview' activePanel={activePanel}  popout={popout} app={commonProps} />
         </Root>
 	);
 };

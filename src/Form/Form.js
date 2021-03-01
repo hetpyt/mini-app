@@ -9,7 +9,6 @@ const Form = (props) => {
     console.log('Form.props=', props);
 
     const [formError, setFormError] = useState(null);
-    const [errorFields, setErrorFields] = useState([]);
     const [formFields, setFormFields] = useState(
         (() => (
             props.fields.map((field) => {
@@ -21,22 +20,12 @@ const Form = (props) => {
         ))()
     );
 
-    const check_required_field = (field) => {
-        if (field.type == "checkbox" && field.itemData) return true;
-        if (props.itemData) {
-            if (props.minLength) {
-                return (props.itemData.toString().length >= props.minLength);
-            } 
-            return true;
-        }
-        return false;
-    }
-
 	const on_change = (e) => {
+        setFormError(null);
 		let fields= [...formFields];
         fields.map((field) => {
             if (field.name == e.currentTarget.name) {
-                field.value = field.type == "checkbox" ? e.currentTarget.checked : e.currentTarget.value;
+                field.value = "checkbox" == field.type ? e.currentTarget.checked : e.currentTarget.value;
             }
         });
 		setFormFields(fields);
@@ -48,13 +37,15 @@ const Form = (props) => {
 		let fields= [...formFields];
         fields.map((field) => {
             if (field.required) {
-                if (field.type == "checkbox") {
-                    field.valid = (field.value == true);
+                if ("checkbox" == field.type) {
+                    field.valid = Boolean(field.value);
                 } else {
-                    field.valid = (
-                        (field.minLength && field.value && field.value.toString().length >= field.minLength)
-                        || field.value
-                    ) == true;
+                    console.log('field=', field);
+                    if (field.minLength) {
+                        field.valid = Boolean(field.value && field.value.toString().length >= field.minLength);
+                    } else {
+                        field.valid = Boolean(field.value && field.value.toString().length > 0);
+                    }
                 }
                 if (!field.valid) {
                     badFields.push({...field});
@@ -111,7 +102,7 @@ const Form = (props) => {
                     </Button>
                 </FormItem>
                 <FormItem>
-                    <Button size="l" mode="destructive" stretched={true} onClick={props.onCancel} >
+                    <Button size="l" mode="secondary" stretched={true} onClick={props.onCancel} >
                         Отмена
                     </Button>
                 </FormItem>

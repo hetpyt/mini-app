@@ -11,8 +11,8 @@ const RegistrationView = (props) => {
 
 	return (
         <View id={props.id} activePanel={props.activePanel} popout={props.popout} >
-            <AccountsList id='accountslist' setAccount={setAccount} session={props.session} />
-            <IndicationsInput id="indicationsinput" account={account} session={props.session} />
+            <AccountsList id='accountslist' setAccount={setAccount} app={props.app} />
+            <IndicationsInput id="indicationsinput" account={account} app={props.app} />
         </View>
     );
 }

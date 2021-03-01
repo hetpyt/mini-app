@@ -7,7 +7,7 @@ const RegistrationList = (props) => {
 	const [regInfo, setRegInfo] = useState(null);
 
     useEffect(() => {
-		props.session.restRequest(
+		props.app.restRequest(
 			'regrequests/list',
 			null,
 			res => {
@@ -19,7 +19,7 @@ const RegistrationList = (props) => {
 		);
     }, []);
 
-	const userInfo = props.session.userInfo;
+	const userInfo = props.app.userInfo;
 
 	const renderCreateButton = () => {
 		if (userInfo ) {
@@ -47,7 +47,7 @@ const RegistrationList = (props) => {
 			}
 
 			return (
-				<Button size="l" mode="primary" stretched={true} onClick={props.session.go} data-to="registration">
+				<Button size="l" mode="primary" stretched={true} onClick={props.app.go} data-to="registration">
 					Создать заявку
 				</Button>
 			);
@@ -56,7 +56,7 @@ const RegistrationList = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={props.session.goBack} data-to="welcomeview.welcome" />}>Список заявок на присоединение лицевого счета</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} data-to="welcomeview.welcome" />}>Список заявок на присоединение лицевого счета</PanelHeader>
 
 			{userInfo && parseInt(userInfo.is_blocked) === 0  &&
 			<Div>

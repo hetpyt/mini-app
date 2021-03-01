@@ -3,13 +3,13 @@ import { FormItem, Input, Checkbox } from '@vkontakte/vkui';
 
 const FormInput = (props) => { 
 
-    console.log('FormInput.props=', props);
+    //console.log('FormInput.props=', props);
 	return (
-        <FormItem top={props.type == "checkbox" ? "" : props.top}
-            status={props.valid === null ? 'default' : (props.valid ? 'valid' : 'error')}
-            bottom={props.valid === false ? (props.errMessage ? props.errMessage : 'Заполните обязательный реквизит') : ""}
+        <FormItem top={"checkbox" == props.type ? "" : props.top}
+            status={null === props.valid ? 'default' : (props.valid ? 'valid' : 'error')}
+            bottom={false === props.valid ? (props.errMessage ? props.errMessage : 'Заполните обязательный реквизит') : ""}
         >
-            {props.type == "checkbox"
+            {"checkbox" == props.type 
                 ? <Checkbox name={props.name} onChange={props.onChange} >{props.top}</Checkbox>
                 : <Input type={props.type ? props.type : "text"} name={props.name} onChange={props.onChange} />
             }

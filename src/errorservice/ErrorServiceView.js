@@ -9,7 +9,7 @@ const ErrorServiceView = (props) => {
 
 	return (
         <View id={props.id} activePanel={props.activePanel} popout={props.popout} >
-            <ErrorService id='errorservice' session={props.session} />
+            <ErrorService id='errorservice' app={props.app} />
         </View>
     );
 }
