@@ -70,6 +70,34 @@ const Form = (props) => {
 
     const setElem = e => (e);
 
+    const renderFormField = (field) => {
+        if (field.itemComponent) {
+            return (
+                <field.itemComponent
+                    {...field}
+                    readOnly={props.readOnly}
+                    onChange={on_change}
+                />
+            );
+        } else if (props.itemComponent) {
+            return (
+                <props.itemComponent
+                    {...field}
+                    readOnly={props.readOnly}
+                    onChange={on_change}
+                />
+            );
+        } else {
+            return (
+                <FormInput
+                    {...field}
+                    readOnly={props.readOnly}
+                    onChange={on_change}
+                />
+            );
+        }
+    }
+
 	return (
         <FormLayout>
             {props.header && setElem(props.header)}
@@ -82,17 +110,7 @@ const Form = (props) => {
 			}
             {formFields && formFields.map(
                 (field) => (
-                    props.itemComponent 
-                    ? <props.itemComponent
-                        {...field}
-                        readOnly={props.readOnly}
-                        onChange={on_change}
-                    />
-                    : <FormInput
-                    {...field}
-                    readOnly={props.readOnly}
-                    onChange={on_change}
-                />
+                    renderFormField(field)
                 )
             )}
             <FormLayoutGroup mode="horizontal">

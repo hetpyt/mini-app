@@ -64,7 +64,7 @@ const RegistrationList = (props) => {
 			</Div>
 			}
 
-			{regInfo &&
+			{Array.isArray(regInfo) && 
 			<Div>
 				<List>
 					{regInfo.map(

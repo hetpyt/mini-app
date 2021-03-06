@@ -11,6 +11,8 @@ import WelcomeView from './welcome/WelcomeView';
 import ErrorServiceView from './errorservice/ErrorServiceView';
 import RegistrationView from './registration/RegistrationView';
 import IndicationsView from './indications/IndicationsView';
+import AdminView from './admin/AdminView';
+
 
 import { isFunction, isObject, isString } from '@vkontakte/vkjs';
 
@@ -227,10 +229,11 @@ const App = () => {
 
 	return (
         <Root id='root' activeView={activeView} >
-            <WelcomeView id='welcomeview' activePanel={activePanel}  popout={popout} app={commonProps} />
-            <RegistrationView id='registrationview' activePanel={activePanel}  popout={popout} app={commonProps} />
-            <IndicationsView id='indicationsview' activePanel={activePanel}  popout={popout} app={commonProps} />
-            <ErrorServiceView id='errorserviceview' activePanel={activePanel}  popout={popout} app={commonProps} />
+            <WelcomeView id='welcomeview' activePanel={activePanel} popout={popout} app={commonProps} />
+            <RegistrationView id='registrationview' activePanel={activePanel} popout={popout} app={commonProps} />
+            <IndicationsView id='indicationsview' activePanel={activePanel} popout={popout} app={commonProps} />
+            <AdminView id='adminview' activePanel={activePanel} popout={popout} app={commonProps} />
+            <ErrorServiceView id='errorserviceview' activePanel={activePanel} popout={popout} app={commonProps} />
         </Root>
 	);
 };

@@ -29,7 +29,7 @@ const Welcome = (props) => {
 					</Div>
 					{['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 && 
 						<Div>
-							<Button size="l" mode="primary" stretched={true} onClick={props.app.go} data-to="adminview.lobby">
+							<Button size="l" mode="primary" stretched={true} onClick={props.app.go} data-to="adminview.mainmenu">
 								Администрирование
 							</Button>
 						</Div>
