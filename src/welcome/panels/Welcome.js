@@ -18,18 +18,18 @@ const Welcome = (props) => {
 			{userInfo && parseInt(userInfo.is_blocked) === 0 &&
 				<Group>
 					<Div>
-						<Button size="l" mode="primary" stretched={true} onClick={props.app.go} data-to="indicationsview.accountslist">
+						<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActiveView("indicationsview")}} >
 							Перейти к вводу показаний
 						</Button>
 					</Div>
 					<Div>
-						<Button size="l" mode="primary" stretched={true} onClick={props.app.go} data-to="registrationview.registrationlist">
+						<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActiveView("registrationview")}} >
 							Присоединить лицевой счет
 						</Button>
 					</Div>
 					{['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 && 
 						<Div>
-							<Button size="l" mode="primary" stretched={true} onClick={props.app.go} data-to="adminview.mainmenu">
+							<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActiveView("adminview")}} >
 								Администрирование
 							</Button>
 						</Div>
@@ -38,7 +38,7 @@ const Welcome = (props) => {
 				</Group>
 			}
 			<Div>
-				<Button size="l" mode="primary" stretched={true} onClick={props.app.go} data-to="welcomeview.help">
+				<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActiveView("helpview")}} >
 					Помощь
 				</Button>
 			</Div>

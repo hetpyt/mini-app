@@ -74,7 +74,7 @@ const IndicationsInput = (props) => {
 			)},
 			(res) => {
 				console.log('res=', res);
-				props.app.inform_alert("Успешно", "Показания приборов учета успешно переданы.", props.app.goBack);
+				props.app.inform_alert("Успешно", "Показания приборов учета успешно переданы.", e => {props.app.setActivePanel('accountslist')});
 			},
 			(err) => {
 				console.log('err=', err);
@@ -86,7 +86,7 @@ const IndicationsInput = (props) => {
 
     return (
         <Panel id={props.id}>
-		    <PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} />} >Ввод показаний</PanelHeader>
+		    <PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActivePanel('accountslist')}} />} >Ввод показаний</PanelHeader>
 
             {formStruct &&
 				<Form
@@ -95,7 +95,7 @@ const IndicationsInput = (props) => {
 					readOnly={false}
 					itemComponent={FormIndicationsInput}
 					onConfirm={confirm}
-					onCancel={props.app.goBack}
+					onCancel={e => {props.app.setActivePanel('accountslist')}}
 				/>
             }	
   

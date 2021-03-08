@@ -4,7 +4,7 @@ import { saveAs } from 'file-saver';
 import 'url-search-params-polyfill';
 
 import bridge from '@vkontakte/vk-bridge';
-import { Root, ScreenSpinner, Alert } from '@vkontakte/vkui';
+import { AppRoot, Root, ScreenSpinner, Alert } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 
 import WelcomeView from './welcome/WelcomeView';
@@ -26,8 +26,7 @@ const App = () => {
     const [route, setRoute] = useState([]);
 
     const [activeView, setActiveView] = useState('welcomeview');
-    const [activePanel, setActivePanel] = useState('welcome');
-    const [activeModal, setActiveModal] = useState(null);
+    const [targetPanel, setTargetPanel] = useState('welcome');
 
     const [dataFetchig, setDataFetching] = useState(false);
     const [error, setError] = useState(null);
@@ -88,12 +87,6 @@ const App = () => {
         }
     }, [vkUser]);
 
-    // эффект при изменении состояния флага асинхронного запроса к серверу с отображением спиннера
-    useEffect(() => {
-        if (dataFetchig) setPopout(spinner);
-        else setPopout(null);
-    }, [dataFetchig]);
-
     useEffect(() => {
         if (error) go('errorserviceview.errorservice');
     }, [error]);
@@ -134,7 +127,7 @@ const App = () => {
         }
         console.log('restRequest(', uri, ').result=', result);
 
-        //try {
+        try {
             if (isObject(result)) {
                 if (result.hasOwnProperty('error')) {
                     if (isFunction(on_error)) 
@@ -148,10 +141,10 @@ const App = () => {
             } else {
                 throw new Error("Получен неожиданный ответ от сервера [2]");
             }
-        //} catch (e) {
-        //    setError(e);
-        //    setActiveTarget('errorserviceview.errorservice');
-        //}
+        } catch (e) {
+            setError(e);
+            //setActiveTarget('errorserviceview.errorservice');
+        }
     }
 
 	const inform_alert = (header, message, onClose) => {
@@ -165,7 +158,7 @@ const App = () => {
 					}
 				]}
 				actionsLayout="vertical"
-				onClose={isFunction(onClose) ? onClose : (() => {setPopout(null)})}
+				onClose={isFunction(onClose) ? onClose : ((e) => {setPopout(null)})}
 				header={header}
 				text={message}
 			/>
@@ -178,11 +171,11 @@ const App = () => {
             target = e;
         else 
             target = e.currentTarget.dataset.to;
-        let {targetView, targetPanel} = parseTo(target);
-        console.log('targetView=', targetView);
-        console.log('targetPanel=', targetPanel);
+        let {tgView, tgPanel} = parseTo(target);
+        console.log('targetView=', tgView);
+        console.log('targetPanel=', tgPanel);
 
-        setRoute([...route, "" + activeView + "." + activePanel]);
+        setRoute([...route, "" + activeView + "." + targetPanel]);
         setActiveTarget(target);
 	}
 
@@ -197,7 +190,7 @@ const App = () => {
         const target = valTo.split('.');
         const result = {};
         result.targetView = activeView;
-        result.targetPanel = activePanel;
+        result.targetPanel = targetPanel;
         if (1 === target.length) {
             result.targetPanel = target[0];
         } else if (target.length > 1) {
@@ -208,18 +201,17 @@ const App = () => {
     }
 
     const setActiveTarget = target => {
-        const {targetView, targetPanel} = parseTo(target);
-        console.log('setActiveTarget.targetView=', targetView);
-        console.log('setActiveTarget.targetPanel=', targetPanel);
+        const {tgView, tgPanel} = parseTo(target);
+        console.log('setActiveTarget.targetView=', tgView);
+        console.log('setActiveTarget.targetPanel=', tgPanel);
 
-        setActiveView(targetView);
-        setActivePanel(targetPanel);
+        setTargetPanel(tgPanel);
+        setActiveView(tgView);
     }
 
     let commonProps = {
         inform_alert : inform_alert,
-        go : go,
-        goBack : goBack,
+        setActiveView : setActiveView,
         restRequest : restRequest,
         setPopout : setPopout,
         vkUser : vkUser,
@@ -228,13 +220,15 @@ const App = () => {
     }; 
 
 	return (
-        <Root id='root' activeView={activeView} >
-            <WelcomeView id='welcomeview' activePanel={activePanel} popout={popout} app={commonProps} />
-            <RegistrationView id='registrationview' activePanel={activePanel} popout={popout} app={commonProps} />
-            <IndicationsView id='indicationsview' activePanel={activePanel} popout={popout} app={commonProps} />
-            <AdminView id='adminview' activePanel={activePanel} popout={popout} app={commonProps} />
-            <ErrorServiceView id='errorserviceview' activePanel={activePanel} popout={popout} app={commonProps} />
-        </Root>
+        <AppRoot>
+            <Root id='root' activeView={activeView} >
+                <WelcomeView id='welcomeview' targetPanel={targetPanel} popout={popout} app={commonProps} />
+                <RegistrationView id='registrationview' targetPanel={targetPanel} popout={popout} app={commonProps} />
+                <IndicationsView id='indicationsview' targetPanel={targetPanel} popout={popout} app={commonProps} />
+                <AdminView id='adminview' targetPanel={targetPanel} popout={popout} app={commonProps} />
+                <ErrorServiceView id='errorserviceview' targetPanel={targetPanel} popout={popout} app={commonProps} />
+            </Root>
+        </AppRoot>
 	);
 };
 

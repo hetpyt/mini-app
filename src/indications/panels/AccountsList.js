@@ -23,7 +23,7 @@ const AccountsList = (props) => {
 
     return (
         <Panel id={props.id}>
-            <PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} />}>Список лицевых счетов</PanelHeader>
+            <PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActiveView("welcomeview")}} />}>Список лицевых счетов</PanelHeader>
             <Group>
                 <Header mode='secondary'>Выберите лицевой счет</Header>
                 {accList && accList.map((acc, index) => (
@@ -34,11 +34,10 @@ const AccountsList = (props) => {
                                 before={<Icon28UserCircleFillBlue />} 
                                 description={acc.acc_id_repr} 
                                 data-index={index} 
-                                data-to='indicationsinput'
                                 onClick={e => {
                                     console.log('active_acc=', accList[e.currentTarget.dataset.index]);
                                     props.setAccount(accList[e.currentTarget.dataset.index]);
-                                    props.app.go(e);
+                                    props.app.setActivePanel("indicationsinput");
                                 }
                             }>
                                 {acc.address_repr}

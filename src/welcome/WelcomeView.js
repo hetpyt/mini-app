@@ -6,8 +6,10 @@ import Welcome from './panels/Welcome';
 
 const WelcomeView = (props) => { 
 
+    const [activePanel, setActivePanel] = useState('welcome');
+
 	return (
-        <View id={props.id} activePanel={props.activePanel} popout={props.popout} >
+        <View id={props.id} activePanel={activePanel} popout={props.popout} >
             <Welcome id='welcome' app={props.app} />
         </View>
     );

@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View } from '@vkontakte/vkui';
 
-import MainMenu from './panels/MainMenu';
-import RegRequestsList from './panels/RegRequestsList';
-import RegRequestsDetail from "./panels/RegRequestsDetail";
+import AdminMainMenu from './panels/AdminMainMenu';
+import AdminRegRequestsList from './panels/AdminRegRequestsList';
+import AdminRegRequestsDetail from "./panels/AdminRegRequestsDetail";
 
 const AdminView = (props) => { 
 
+    const [activePanel, setActivePanel] = useState('mainmenu');
     const [regRequestId, setRegRequestId] = useState(null);
     const [vkAccessToken, setVkAccessToken] = useState('');
 
 	return (
-        <View id={props.id} activePanel={props.activePanel} popout={props.popout} >
-            <MainMenu id='mainmenu' app={props.app} />
-            <RegRequestsList id='regrequestslist' setRegRequestId={setRegRequestId} app={props.app} />
-            <RegRequestsDetail id='regrequestsdetail' regRequestId={regRequestId} app={props.app} />
+        <View id={props.id} activePanel={activePanel} popout={props.popout} >
+            <AdminMainMenu id='mainmenu' app={{setActivePanel, ...props.app}} />
+            <AdminRegRequestsList id='regrequestslist' setRegRequestId={setRegRequestId} app={{setActivePanel, ...props.app}} />
+            <AdminRegRequestsDetail id='regrequestsdetail' regRequestId={regRequestId} app={{setActivePanel, ...props.app}} />
         </View>
     );
 }

@@ -87,7 +87,7 @@ const Registration = (props) => {
 			(res) => {
 				console.log('res=', res);
 
-				props.app.goBack();
+				props.app.setActivePanel('registrationlist');
 			},
 			(err) => {
 				console.log('err=', err);
@@ -99,14 +99,14 @@ const Registration = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} />}>Заявка на присоединение ЛС</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActivePanel('registrationlist')}} />}>Заявка на присоединение ЛС</PanelHeader>
 			<Form 
 				header={<Header mode="secondary">Заполните данные лицевого счета</Header>}
 				fields={formStruct()}
 				readOnly={false}
 				itemComponent={null}
 				onConfirm={confirm}
-				onCancel={props.app.goBack}
+				onCancel={e => {props.app.setActivePanel('registrationlist')}}
 			/>
 
 		</Panel>

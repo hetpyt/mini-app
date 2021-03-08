@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { FormItem, Select } from '@vkontakte/vkui';
+import { FormItem, NativeSelect } from '@vkontakte/vkui';
 import { isArray } from '@vkontakte/vkjs';
 
 const FormSelectInput = (props) => { 
 
+    console.log("FormSelectInput.props=", props)
+
     const renderOptions = (options) => {
         if (isArray(options)) {
+            console.log("renderOptions.options=", options)
             return (
                 options.map(
                         (option, index) => (
@@ -18,9 +21,9 @@ const FormSelectInput = (props) => {
 
 	return (
         <FormItem top={props.top}>
-            <Select name={props.name} disabled={props.disabled} value={props.staticValue} onChange={props.onChange} >
-                {props.options && renderOptions(props.options)}
-            </Select>							
+            <NativeSelect name={props.name} disabled={props.disabled} onChange={props.onChange} >
+                {renderOptions(props.options)}
+            </NativeSelect>							
         </FormItem>
     );
 }

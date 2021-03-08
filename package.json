@@ -18,11 +18,13 @@
     "react-scripts": "^4.0.1"
   },
   "dependencies": {
-    "@vkontakte/icons": "^1.79.0",
-    "@vkontakte/vk-bridge": "^2.4.0",
+    "@babel/runtime": "^7.13.9",
+    "@types/react": "^17.0.3",
+    "@vkontakte/icons": "^1.82.0",
+    "@vkontakte/vk-bridge": "^2.4.1",
     "@vkontakte/vk-miniapps-deploy": "0.0.17",
     "@vkontakte/vkjs": "^0.20.0",
-    "@vkontakte/vkui": "^4.0.4",
+    "@vkontakte/vkui": "^4.2.1",
     "babel-eslint": "^10.1.0",
     "chalk": "^2.4.2",
     "core-js": "^3.6.4",
@@ -32,8 +34,9 @@
     "file-saver": "^2.0.5",
     "ky": "^0.20.0",
     "prop-types": "^15.7.2",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "typescript": "^4.2.3",
     "url-search-params-polyfill": "^8.1.0"
   },
   "browserslist": {

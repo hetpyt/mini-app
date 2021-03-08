@@ -17,7 +17,7 @@ import Icon24DismissSubstract from '@vkontakte/icons/dist/24/dismiss_substract';
 import Icon24Spinner from '@vkontakte/icons/dist/24/spinner';
 import Counter from '@vkontakte/vkui/dist/components/Counter/Counter';
 
-const MainMenu = (props) => {
+const AdminMainMenu = (props) => {
 
 	const [regReqCount, setRegReqCount] = useState(0);
 
@@ -45,7 +45,7 @@ const MainMenu = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} />} >Администрирование</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActiveView('welcomeview')}} />} >Администрирование</PanelHeader>
 			{userInfo && 'ADMIN' === userInfo.privileges &&
 			<Group header={<Header mode="secondary">Меню администратора</Header>}>
 				<SimpleCell expandable >Полномочия пользователей</SimpleCell>
@@ -53,15 +53,15 @@ const MainMenu = (props) => {
 			}
 			{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
 			<Group header={<Header mode="secondary">Меню оператора</Header>}>
-				<SimpleCell expandable onClick={props.app.go} data-to="regrequestslist" 
+				<SimpleCell expandable onClick={e => {props.app.setActivePanel('regrequestslist')}}  
 					after={parseInt(regReqCount) ? <Counter mode="primary">{regReqCount}</Counter> : null} 
 				>Заявки на присоединение ЛС</SimpleCell>
-				<SimpleCell expandable onClick={props.app.go} data-to="dataprocess-upload">Загрузка реестра ЛС</SimpleCell>
-				<SimpleCell expandable onClick={props.app.go} data-to="dataprocess-download">Выгрузка принятых показаний</SimpleCell>
+				<SimpleCell expandable onClick={e => {props.app.setActiveView('welcomeview')}} >Загрузка реестра ЛС</SimpleCell>
+				<SimpleCell expandable onClick={e => {props.app.setActiveView('welcomeview')}} >Выгрузка принятых показаний</SimpleCell>
 			</Group>	
 			}
 		</Panel>
 	);
 };
 
-export default MainMenu;
+export default AdminMainMenu;

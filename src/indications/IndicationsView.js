@@ -6,13 +6,13 @@ import IndicationsInput from './panels/IndicationsInput';
 
 const RegistrationView = (props) => { 
 
+    const [activePanel, setActivePanel] = useState('accountslist');
     const [account, setAccount] = useState(null);
 
-
 	return (
-        <View id={props.id} activePanel={props.activePanel} popout={props.popout} >
-            <AccountsList id='accountslist' setAccount={setAccount} app={props.app} />
-            <IndicationsInput id="indicationsinput" account={account} app={props.app} />
+        <View id={props.id} activePanel={activePanel} popout={props.popout} >
+            <AccountsList id='accountslist' setAccount={setAccount} app={{setActivePanel, ...props.app}} />
+            <IndicationsInput id="indicationsinput" account={account} app={{setActivePanel, ...props.app}} />
         </View>
     );
 }

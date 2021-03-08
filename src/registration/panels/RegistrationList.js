@@ -47,7 +47,7 @@ const RegistrationList = (props) => {
 			}
 
 			return (
-				<Button size="l" mode="primary" stretched={true} onClick={props.app.go} data-to="registration">
+				<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActivePanel('registration')}} >
 					Создать заявку
 				</Button>
 			);
@@ -56,7 +56,7 @@ const RegistrationList = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} data-to="welcomeview.welcome" />}>Список заявок на присоединение лицевого счета</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActiveView("welcomeview")}} />}>Список заявок на присоединение лицевого счета</PanelHeader>
 
 			{userInfo && parseInt(userInfo.is_blocked) === 0  &&
 			<Div>
@@ -72,7 +72,6 @@ const RegistrationList = (props) => {
 							<RichCell 
 								key={id} 
 								data-index={index}
-								data-to='registration'
 								multiline={true} 
 								disabled={true}
 								text={'на присоединение лицевого счета № ' + acc_id}
