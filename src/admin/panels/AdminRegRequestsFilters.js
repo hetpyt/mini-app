@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FormLayout, FormLayoutGroup, FormStatus, FormItem, Button } from '@vkontakte/vkui';
+import { Panel, PanelHeader, PanelHeaderBack, SimpleCell, Switch, Group, Header } from '@vkontakte/vkui';
 
 const AdminRegRequestsFilters = (props) => {
     
@@ -23,11 +23,11 @@ const AdminRegRequestsFilters = (props) => {
     return (
         <Panel id={props.id}>
             <PanelHeader left={<PanelHeaderBack onClick={props.onDone} />} >Фильтры</PanelHeader>
-
-            <SimpleCell disabled after={<Switch id="is_approved-null" defaultChecked={isFiltersSwitchChecked('is_approved-null')} onChange={onFiltersSwitchCanged} />}>Ожидает обработки</SimpleCell>
-            <SimpleCell disabled after={<Switch id="is_approved-1" defaultChecked={isFiltersSwitchChecked('is_approved-1')} onChange={onFiltersSwitchCanged} />}>Одобрена</SimpleCell>
-            <SimpleCell disabled after={<Switch id="is_approved-0" defaultChecked={isFiltersSwitchChecked('is_approved-0')} onChange={onFiltersSwitchCanged} />}>Отклонена</SimpleCell>
-
+            <Group header={<Header>Состояние заявки</Header>}>
+                <SimpleCell disabled after={<Switch id="is_approved-null" defaultChecked={isFiltersSwitchChecked('is_approved-null')} onChange={e => {}} />}>Ожидает обработки</SimpleCell>
+                <SimpleCell disabled after={<Switch id="is_approved-1" defaultChecked={isFiltersSwitchChecked('is_approved-1')} onChange={e => {}} />}>Одобрена</SimpleCell>
+                <SimpleCell disabled after={<Switch id="is_approved-0" defaultChecked={isFiltersSwitchChecked('is_approved-0')} onChange={e => {}} />}>Отклонена</SimpleCell>
+            </Group>
         </Panel>
     );
 }
