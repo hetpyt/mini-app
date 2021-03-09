@@ -25,9 +25,20 @@ const Form = (props) => {
 		let fields= [...formFields];
         fields.map((field) => {
             if (field.name == e.currentTarget.name) {
-                field.value = "checkbox" == field.type ? e.currentTarget.checked : e.currentTarget.value;
+                switch (field.type) {
+                    case "checkbox":
+                        field.value = e.currentTarget.checked;
+                        break;
+                    case "file":
+                        field.value = e.target.files[0];
+                        break;
+                    default:
+                        field.value = e.currentTarget.value;
+                }
+                if (isFunction(field._onChange)) field._onChange(field);
             }
         });
+        if (isFunction(props._onChange)) props._onChange(fields);
 		setFormFields(fields);
 	}
 
@@ -63,8 +74,10 @@ const Form = (props) => {
             );
 
         } else {
-            setFormError(null);
-            if (isFunction(props.onConfirm)) props.onConfirm([...fields]);
+            if (isFunction(props.onConfirm)) {
+                let err = props.onConfirm([...fields]);
+                setFormError(err);
+            }
         }
     }
 

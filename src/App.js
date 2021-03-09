@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import ky from 'ky';
-import { saveAs } from 'file-saver';
 import 'url-search-params-polyfill';
 
 import bridge from '@vkontakte/vk-bridge';
@@ -23,36 +22,16 @@ const App = () => {
         return new URLSearchParams(window.location.search);
     })());
 
-    const [route, setRoute] = useState([]);
-
     const [activeView, setActiveView] = useState('welcomeview');
-    const [targetPanel, setTargetPanel] = useState('welcome');
 
-    const [dataFetchig, setDataFetching] = useState(false);
     const [error, setError] = useState(null);
     // информация о пользователе ВК
     const [vkUser, setVkUser] = useState(null);
     // информация о пользователе учетной системы
     const [userInfo, setUserInfo] = useState(null);
-    // информация о запросе на регистрацию
-    const [regInfo, setRegInfo] = useState(null);
-    //const [regRequestId, setRegRequestId] = useState(null);
-    // admin
-    const [regRequests, setRegRequests] = useState([]);
-    const [regRequestsFilters, setRegRequestsFilters] = useState([
-        {
-            field: "is_approved",
-            value: ['null']
-        }
-    ]);
-    const [activeRegRequest, setActiveRegRequest] = useState(null);
     // file data
 	const [fileData, setFileData] = useState(null);
         
-    const [activeItem, setActiveItem] = useState(null);
-
-    const [metersInfo, setMetersInfo] = useState(null);
-    const [formData, setFormData] = useState([]);
 	const [popout, setPopout] = useState(spinner);
 
     // эффект при создании компонента апп
@@ -88,7 +67,7 @@ const App = () => {
     }, [vkUser]);
 
     useEffect(() => {
-        if (error) go('errorserviceview.errorservice');
+        if (error) setActiveView('errorserviceview');
     }, [error]);
 
     const getToken = () => {
@@ -97,7 +76,6 @@ const App = () => {
   
     async function restRequest(uri, json_data = null, on_done = null, on_error = null) {
         console.log('restRequest(' + uri + ').json_data=', json_data);
-        //setDataFetching(true);
         let options = {
             prefixUrl: '/api',
             mode: 'no-cors',
@@ -118,11 +96,9 @@ const App = () => {
 
         } catch (e) {
             setError(e);
-            //setActiveTarget('errorserviceview.errorservice');
             return;
 
         } finally {
-            //setDataFetching(false);
             setPopout(null);
         }
         console.log('restRequest(', uri, ').result=', result);
@@ -136,18 +112,17 @@ const App = () => {
                     if (isFunction(on_done)) 
                         on_done(result.result);
                 } else {
-                    throw new Error("Получен неожиданный ответ от сервера [1]");
+                    throw new Error("Получен неожиданный ответ от сервера: не содержит ожидаемый атрибут [1]");
                 }
             } else {
-                throw new Error("Получен неожиданный ответ от сервера [2]");
+                throw new Error("Получен неожиданный ответ от сервера: не является объектом [2]");
             }
         } catch (e) {
             setError(e);
-            //setActiveTarget('errorserviceview.errorservice');
         }
     }
 
-	const inform_alert = (header, message, onClose) => {
+	const inform_alert = (header, message, onClose = null) => {
 		setPopout(
 			<Alert
 				actions={[
@@ -157,63 +132,49 @@ const App = () => {
 						mode: 'cancel'
 					}
 				]}
-				actionsLayout="vertical"
-				onClose={isFunction(onClose) ? onClose : ((e) => {setPopout(null)})}
+				actionsLayout="horizontal"
+				onClose={ e => {
+                    setPopout(null);
+                    if (isFunction(onClose)) onClose(e); 
+                }}
 				header={header}
 				text={message}
 			/>
 		);
 	}
 
-	const go = e => {
-        let target = null;
-        if (isString(e)) 
-            target = e;
-        else 
-            target = e.currentTarget.dataset.to;
-        let {tgView, tgPanel} = parseTo(target);
-        console.log('targetView=', tgView);
-        console.log('targetPanel=', tgPanel);
-
-        setRoute([...route, "" + activeView + "." + targetPanel]);
-        setActiveTarget(target);
-	}
-
-    const goBack = e => {
-        let r = [...route];
-        let target = r.pop();
-        setRoute([...r]);
-        if (target) setActiveTarget(target);
-    }
-
-    const parseTo = valTo => {
-        const target = valTo.split('.');
-        const result = {};
-        result.targetView = activeView;
-        result.targetPanel = targetPanel;
-        if (1 === target.length) {
-            result.targetPanel = target[0];
-        } else if (target.length > 1) {
-            result.targetView = target[0];
-            result.targetPanel = target[1];
-        }
-        return result;
-    }
-
-    const setActiveTarget = target => {
-        const {tgView, tgPanel} = parseTo(target);
-        console.log('setActiveTarget.targetView=', tgView);
-        console.log('setActiveTarget.targetPanel=', tgPanel);
-
-        setTargetPanel(tgPanel);
-        setActiveView(tgView);
+    const question_alert = (header, message, onConfirm = null, onAbort = null) => {
+		setPopout(
+			<Alert
+				actions={[
+					{
+						title: 'Отмена',
+						autoclose: true,
+						mode: 'cancel',
+                        action : onAbort,
+					},
+					{
+						title: 'Продолжить',
+						autoclose: true,
+						mode: 'destructive',
+                        action : onConfirm,
+					},
+				]}
+				actionsLayout="horizontal"
+				onClose={(e) => {setPopout(null)}}
+				header={header}
+				text={message}
+			/>
+		);
     }
 
     let commonProps = {
         inform_alert : inform_alert,
+        question_alert : question_alert,
         setActiveView : setActiveView,
         restRequest : restRequest,
         setPopout : setPopout,
+        setError : setError,
         vkUser : vkUser,
         userInfo : userInfo,
         error : error,
@@ -222,11 +183,11 @@ const App = () => {
 	return (
         <AppRoot>
             <Root id='root' activeView={activeView} >
-                <WelcomeView id='welcomeview' targetPanel={targetPanel} popout={popout} app={commonProps} />
-                <RegistrationView id='registrationview' targetPanel={targetPanel} popout={popout} app={commonProps} />
-                <IndicationsView id='indicationsview' targetPanel={targetPanel} popout={popout} app={commonProps} />
-                <AdminView id='adminview' targetPanel={targetPanel} popout={popout} app={commonProps} />
-                <ErrorServiceView id='errorserviceview' targetPanel={targetPanel} popout={popout} app={commonProps} />
+                <WelcomeView id='welcomeview' popout={popout} app={commonProps} />
+                <RegistrationView id='registrationview' popout={popout} app={commonProps} />
+                <IndicationsView id='indicationsview' popout={popout} app={commonProps} />
+                <AdminView id='adminview' popout={popout} app={commonProps} />
+                <ErrorServiceView id='errorserviceview' popout={popout} app={commonProps} />
             </Root>
         </AppRoot>
 	);

@@ -56,8 +56,8 @@ const AdminMainMenu = (props) => {
 				<SimpleCell expandable onClick={e => {props.app.setActivePanel('regrequestslist')}}  
 					after={parseInt(regReqCount) ? <Counter mode="primary">{regReqCount}</Counter> : null} 
 				>Заявки на присоединение ЛС</SimpleCell>
-				<SimpleCell expandable onClick={e => {props.app.setActiveView('welcomeview')}} >Загрузка реестра ЛС</SimpleCell>
-				<SimpleCell expandable onClick={e => {props.app.setActiveView('welcomeview')}} >Выгрузка принятых показаний</SimpleCell>
+				<SimpleCell expandable onClick={e => {props.app.setActivePanel('uploaddata')}} >Загрузка реестра ЛС</SimpleCell>
+				<SimpleCell expandable onClick={e => {props.app.setActivePanel('downloaddata')}} >Выгрузка принятых показаний</SimpleCell>
 			</Group>	
 			}
 		</Panel>

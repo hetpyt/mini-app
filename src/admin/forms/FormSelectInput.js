@@ -20,7 +20,10 @@ const FormSelectInput = (props) => {
     }
 
 	return (
-        <FormItem top={props.top}>
+        <FormItem top={props.top}
+            status={null === props.valid ? 'default' : (props.valid ? 'valid' : 'error')}
+            bottom={false === props.valid ? (props.errMessage ? props.errMessage : 'Выберите значение из списка') : ""}
+        >
             <NativeSelect name={props.name} disabled={props.disabled} onChange={props.onChange} >
                 {renderOptions(props.options)}
             </NativeSelect>							
