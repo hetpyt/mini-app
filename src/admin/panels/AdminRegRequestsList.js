@@ -5,18 +5,17 @@ import { isArray } from '@vkontakte/vkjs';
 
 const AdminRegRequestsList = (props) => {
 
+	console.log("AdminRegRequestsList.props=", props);
 	const userInfo = props.app.userInfo;
 
 	const [regRequests, setregRequests] = useState([]);
-	const [filters, setFilters] = useState([]);
-	const [filtersCount, setFiltersCount] = useState(0);
 
 
 	useEffect(() => {
 		props.app.restRequest(
             'admin/regrequests/list',
             {
-				filters : filters
+				filters : props.regRequestsFilters
 			},
             res => {
                 setregRequests(res);
@@ -25,10 +24,10 @@ const AdminRegRequestsList = (props) => {
                 console.log('err=', err);
             }
         );
-	}, []);
+	}, [props.regRequestsFilters]);
 
-	const openModal = e => {
-
+	const openFilters = e => {
+		props.app.setActiveModal('regrequestsfilters')
 	}
 
 	return (
@@ -41,10 +40,10 @@ const AdminRegRequestsList = (props) => {
 						<SubnavigationBar mode="overflow">
 							<SubnavigationButton
 								before={<Icon24Filter/>}
-								selected={filtersCount > 0}
+								selected={props.regRequestsFilters.length > 0}
 								expandable
-								after={filtersCount > 0 && <Counter mode="primary" size="s">{filtersCount}</Counter>}
-								onClick={openModal}
+								after={props.regRequestsFilters.length > 0 && <Counter mode="primary" size="s">{props.regRequestsFilters.length}</Counter>}
+								onClick={openFilters}
 							>
 
 							</SubnavigationButton>
