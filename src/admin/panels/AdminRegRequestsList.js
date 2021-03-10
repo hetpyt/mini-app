@@ -1,21 +1,25 @@
 import React, { useState, useEffect} from 'react';
-import { Panel, PanelHeader, Header, PanelHeaderBack, Group, SimpleCell, List, Counter, FixedLayout, SubnavigationBar, SubnavigationButton, Avatar, Div } from '@vkontakte/vkui';
-import { Icon28DoneOutline, Icon28RecentOutline, Icon28BlockOutline, Icon24Hide, Icon24Delete, Icon24Filter } from '@vkontakte/icons';
+import { Panel, PanelHeader, Header, PanelHeaderBack, Group, SimpleCell, List, Counter, FixedLayout, SubnavigationBar, SubnavigationButton, IconButton, Div } from '@vkontakte/vkui';
+import { Icon28DoneOutline, Icon28RecentOutline, Icon28BlockOutline, Icon24Hide, Icon24Delete, Icon24Filter, Icon36ChevronLeftOutline, Icon36ChevronRightOutline } from '@vkontakte/icons';
 import { isArray } from '@vkontakte/vkjs';
-
 const AdminRegRequestsList = (props) => {
+	const REGREQ_LIST_PAGE_SIZE = 2;
 
 	console.log("AdminRegRequestsList.props=", props);
 	const userInfo = props.app.userInfo;
 
 	const [regRequests, setregRequests] = useState([]);
-
+	const [listPage, setListPage] = useState(1);
 
 	useEffect(() => {
 		props.app.restRequest(
             'admin/regrequests/list',
             {
-				filters : props.regRequestsFilters
+				...props.regRequestsFilters,
+				limits : { 
+					page_num : listPage,
+					page_len : REGREQ_LIST_PAGE_SIZE
+				}
 			},
             res => {
                 setregRequests(res);
@@ -24,7 +28,7 @@ const AdminRegRequestsList = (props) => {
                 console.log('err=', err);
             }
         );
-	}, [props.regRequestsFilters]);
+	}, [props.regRequestsFilters, listPage]);
 
 	const openFilters = e => {
 		props.app.setActiveModal('regrequestsfilters')
@@ -40,9 +44,8 @@ const AdminRegRequestsList = (props) => {
 						<SubnavigationBar mode="overflow">
 							<SubnavigationButton
 								before={<Icon24Filter/>}
-								selected={props.regRequestsFilters.length > 0}
+								selected={true}
 								expandable
-								after={props.regRequestsFilters.length > 0 && <Counter mode="primary" size="s">{props.regRequestsFilters.length}</Counter>}
 								onClick={openFilters}
 							>
 
@@ -75,6 +78,28 @@ const AdminRegRequestsList = (props) => {
 									</SimpleCell>
 								)
 							)}
+							<SimpleCell
+								disabled
+								before={
+									<IconButton onClick={e => {
+										if (listPage > 1) 
+											setListPage(listPage - 1);
+									}}>
+										<Icon36ChevronLeftOutline/>
+									</IconButton>
+								}
+								after={
+									<IconButton onClick={e => {
+										if (regRequests.length == REGREQ_LIST_PAGE_SIZE) 
+											setListPage(listPage + 1);
+									}}>
+										<Icon36ChevronRightOutline/>
+									</IconButton>
+
+								}
+					>
+								
+							</SimpleCell>
 						</List>
 					}
 				</Div>

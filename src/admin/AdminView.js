@@ -15,12 +15,17 @@ const AdminView = (props) => {
     const [activePanel, setActivePanel] = useState('mainmenu');
     const [activeModal, setActiveModal] = useState(null);
     const [regRequestId, setRegRequestId] = useState(null);
-    const [regRequestsFilters, setRegRequestsFilters] = useState([
+    const [regRequestsFilters, setRegRequestsFilters] = useState(
         {
-            field : "is_approved",
-            value : [null]
+            filters : [
+                {
+                    field : "is_approved",
+                    value : [null]
+                }
+            ],
+            order : "request_date",
         }
-    ]);
+    );
     const [vkAccessToken, setVkAccessToken] = useState('');
 
 	return (
