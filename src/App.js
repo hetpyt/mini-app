@@ -29,6 +29,8 @@ const App = () => {
     const [vkUser, setVkUser] = useState(null);
     // информация о пользователе учетной системы
     const [userInfo, setUserInfo] = useState(null);
+    //
+    const [appPermissions, setAppPermissions] = useState(null);
     // file data
 	const [fileData, setFileData] = useState(null);
         
@@ -61,7 +63,8 @@ const App = () => {
 
         if (vkUser) {
             restRequest('privileges/get', null, res => {
-                setUserInfo(res);
+                setUserInfo(res.user_privileges);
+                setAppPermissions(res.app_permissions);
             });
         }
     }, [vkUser]);
@@ -177,6 +180,7 @@ const App = () => {
         setError : setError,
         vkUser : vkUser,
         userInfo : userInfo,
+        appPermissions : appPermissions,
         error : error,
     }; 
 
