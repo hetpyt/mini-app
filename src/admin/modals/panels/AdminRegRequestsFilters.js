@@ -75,10 +75,10 @@ const AdminRegRequestsFilters = (props) => {
             onClose={onPageClose}
         >
             <Div>
-                <Group mode="card" header={<Header>Сортировка</Header>}>
+                <Group mode="card" header={<Header mode="secondary" >Сортировка</Header>}>
                     <SimpleCell disabled after={<Switch id="sort" defaultChecked={order.charAt(0) !== "-"} onChange={onOrderSwitchChange} />}>{order.charAt(0) !== "-" ? "Сначала старые" : "Сначала новые"}</SimpleCell>
                 </Group>
-                <Group mode="card" header={<Header>Состояние заявки (ИЛИ)</Header>}>
+                <Group mode="card" header={<Header mode="secondary" >Состояние заявки (ИЛИ)</Header>}>
                     <SimpleCell disabled after={<Switch id="is_approved_null" defaultChecked={isFilter("is_approved", null)} onChange={onFiltersSwitchChangeGen("is_approved", null)} />}>Ожидает обработки</SimpleCell>
                     <SimpleCell disabled after={<Switch id="is_approved_1" defaultChecked={isFilter("is_approved", 1)} onChange={onFiltersSwitchChangeGen("is_approved", 1)} />}>Одобрена</SimpleCell>
                     <SimpleCell disabled after={<Switch id="is_approved_0" defaultChecked={isFilter("is_approved", 0)} onChange={onFiltersSwitchChangeGen("is_approved", 0)} />}>Отклонена</SimpleCell>

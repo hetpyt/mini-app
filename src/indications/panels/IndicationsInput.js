@@ -19,8 +19,8 @@ const IndicationsInput = (props) => {
 					top : meter.title,
 					type : "number",
 					required : false,
-					staticValue : meter.current_count,
-					defaultValue : meter.new_count,
+					current_count : meter.current_count,
+					new_count : meter.new_count,
 					description : meter.recieve_date ? 'были переданы ' + meter.recieve_date + (props.app.vkUser.id === parseInt(meter.vk_user_id) ? ' вами' : ' другим пользователем') : 'еще не передавались',
 					_meter_id : meter.meter_id,
 				}))
@@ -51,37 +51,64 @@ const IndicationsInput = (props) => {
 	const confirm = (formData) => {
 		console.log('IndicationsInput.confirm.formdata=', formData);
 
+		let warn_fields = 0;
 		// check int 
 		for (let i=0; i < formData.length; i++) {
-			if ( formData[i].value === null || formData[i].value === "" || (Number.isInteger(Number(formData[i].value)) && Number(formData[i].value) >= 0) ) {}
-			else {
-				props.app.inform_alert("Введены некорректные данные", 
-					'В качестве показаний приборов учета могут выступать только положительные целые числа.');
-				return;
+			if ( formData[i].value === null || formData[i].value === "" ) {
+				// нул или пустая строка - допустимо, передан факт передачи показаний
+
+			} else if ( (Number.isInteger(Number(formData[i].value)) && Number(formData[i].value) >= 0) ) {
+				// check indications
+				//console.log("formData[i].value=", formData[i].value);
+				if ( !Number.isNaN(Number(formData[i].current_count)) ) {
+					//console.log("current_count=", formData[i].current_count);
+					if ( Number(formData[i].value) < Number(formData[i].current_count) ) {
+						formData[i].valid = false;
+						warn_fields++;
+					}
+				}
+			} else {
+				formData[i].valid = false;
+				return({
+					header : "Ошибка заполнения формы",
+					text : "В качестве показаний приборов учета могут выступать только положительные целые числа."
+				});
 			}
 		}
 
-		props.app.restRequest(
-			"indications/add",
-			{	account_id : props.account.acc_id,
-				meters : formData.map(
-				(field) => (
-					{
-						meter_id : field._meter_id,
-						new_count : field.value,
-					}
-				)
-			)},
-			(res) => {
-				console.log('res=', res);
-				props.app.inform_alert("Успешно", "Показания приборов учета успешно переданы.", e => {props.app.setActivePanel('accountslist')});
-			},
-			(err) => {
-				console.log('err=', err);
-				props.app.inform_alert("Ошибка обработки запроса", err.message + " [" + err.code + "]");
-				//props.app.goBack();
-			}
-		)
+		const sendData = () => {
+			props.app.restRequest(
+				"indications/add",
+				{	account_id : props.account.acc_id,
+					meters : formData.map(
+					(field) => (
+						{
+							meter_id : field._meter_id,
+							new_count : field.value,
+						}
+					)
+				)},
+				(res) => {
+					console.log('res=', res);
+					props.app.inform_alert("Успех", "Показания приборов учета успешно переданы.", e => {props.app.setActivePanel('accountslist')});
+				},
+				(err) => {
+					console.log('err=', err);
+					props.app.inform_alert("Отказ", err.message + " [" + err.code + "]");
+					//props.app.goBack();
+				}
+			)
+		}
+
+		if (warn_fields) {
+			// есть поля с некорректными но допустимыми данными
+			props.app.question_alert("Предупреждение",
+			"Для одного или нескольких приборов учета введены показания меньшие текущих. Все равно отправить данные?",
+			sendData);
+		} else {
+			sendData();
+		}
+
 	}
 
     return (

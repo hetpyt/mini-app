@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Panel, PanelHeader, PanelHeaderBack, Button, RichCell, List, Div, Caption } from '@vkontakte/vkui';
+import { Panel, PanelHeader, PanelHeaderBack, Button, RichCell, List, Div, Caption, Group, Header } from '@vkontakte/vkui';
 import { Icon28CheckCircleFill, Icon28CancelCircleFillRed, Icon28ClockCircleFillGray } from '@vkontakte/icons';
 
 const RegistrationList = (props) => {
@@ -56,7 +56,7 @@ const RegistrationList = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActiveView("welcomeview")}} />}>Список заявок на присоединение лицевого счета</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActiveView("welcomeview")}} />}>Присоединение лицевого счета</PanelHeader>
 
 			{userInfo && parseInt(userInfo.is_blocked) === 0  &&
 			<Div>
@@ -65,37 +65,42 @@ const RegistrationList = (props) => {
 			}
 
 			{Array.isArray(regInfo) && 
-			<Div>
-				<List>
-					{regInfo.map(
-						({ id, acc_id, is_approved, rejection_reason, request_date }, index) => (
-							<RichCell 
-								key={id} 
-								data-index={index}
-								multiline={true} 
-								disabled={true}
-								text={'на присоединение лицевого счета № ' + acc_id}
-								caption={''
-								+ (is_approved === null 
-									? 'ожидает проверки' 
-									: (parseInt(is_approved) === 0 
-										? 'отклонена по причине: ' 
-										+ (rejection_reason === null 
-											? 'причина не указана' 
-											: rejection_reason) 
-										: ' одобрена'))}
-								after={(is_approved === null 
-									? <Icon28ClockCircleFillGray/> 
-									: (parseInt(is_approved) === 1 
-										? <Icon28CheckCircleFill/> 
-										: <Icon28CancelCircleFillRed/>))}
-							>
-								Заявка №{id} от {request_date}
-							</RichCell>
-						)
-					)}
-				</List>
-			</Div>
+			<Group   
+			    mode="plain"
+				header={<Header mode="secondary" >Перечень заявок</Header>}
+			>
+				<Div>
+					<List>
+						{regInfo.map(
+							({ id, acc_id, is_approved, rejection_reason, request_date }, index) => (
+								<RichCell 
+									key={id} 
+									data-index={index}
+									multiline={true} 
+									disabled={true}
+									text={'на присоединение лицевого счета № ' + acc_id}
+									caption={''
+									+ (is_approved === null 
+										? 'ожидает проверки' 
+										: (parseInt(is_approved) === 0 
+											? 'отклонена по причине: ' 
+											+ (rejection_reason === null 
+												? 'причина не указана' 
+												: rejection_reason) 
+											: ' одобрена'))}
+									after={(is_approved === null 
+										? <Icon28ClockCircleFillGray/> 
+										: (parseInt(is_approved) === 1 
+											? <Icon28CheckCircleFill/> 
+											: <Icon28CancelCircleFillRed/>))}
+								>
+									Заявка №{id} от {request_date}
+								</RichCell>
+							)
+						)}
+					</List>
+				</Div>
+			</Group>
 			}
 
 			<Div>

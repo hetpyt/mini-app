@@ -22,7 +22,7 @@ const Form = (props) => {
 
 	const on_change = (e) => {
         setFormError(null);
-		let fields= [...formFields];
+		let fields= formFields.map(f => ({...f}));
         fields.map((field) => {
             if (field.name == e.currentTarget.name) {
                 switch (field.type) {
@@ -35,6 +35,8 @@ const Form = (props) => {
                     default:
                         field.value = e.currentTarget.value;
                 }
+                // сброс невалидности
+                field.valid = null;
                 if (isFunction(field._onChange)) field._onChange(field);
             }
         });
@@ -44,28 +46,49 @@ const Form = (props) => {
 
 	const confirm = (e) => {
         // check required fields
-        let badFields = [];
-		let fields= [...formFields];
+        let badFields = 0;
+		let fields= formFields.map(f => ({...f}));
         fields.map((field) => {
             if (field.required) {
-                if ("checkbox" == field.type) {
-                    field.valid = Boolean(field.value);
-                } else {
-                    console.log('field=', field);
-                    if (field.minLength) {
-                        field.valid = Boolean(field.value && field.value.toString().length >= field.minLength);
-                    } else {
-                        field.valid = Boolean(field.value && field.value.toString().length > 0);
-                    }
+                switch (field.type) {
+                    case "checkbox":
+                        // required здесь это обязательность установки флажка
+                        field.valid = Boolean(field.value);
+                        break;
+                    
+                    case "file":
+                        // файл выбран
+                        field.valid = Boolean(e.target.files[0]);
+                        break;
+
+                    case "number":
+                        field.valid = (Boolean(field.value) && !Number.isNaN(Number(field.value)));
+                        break;
+
+                    case "text":
+                        // text
+                        if (field.minLength) {
+                            // если задана мин длина поля, то проверяем 
+                            field.valid = Boolean(field.value && field.value.toString().length >= field.minLength);
+                        } else {
+                            // проверяем на длину строки
+                            field.valid = Boolean(field.value && field.value.toString().length > 0);
+                        }
+                        break;
+
+                    default:
+                        // поле неизвестного типа - валидно
+                        field.valid = true;
                 }
+
                 if (!field.valid) {
-                    badFields.push({...field});
+                    badFields++;
                 }
             }
         });
         setFormFields(fields);
 
-        if (badFields.length) {
+        if (badFields) {
             setFormError(
                 {
                     header : "Ошибка заполнения формы",
@@ -75,7 +98,11 @@ const Form = (props) => {
 
         } else {
             if (isFunction(props.onConfirm)) {
-                let err = props.onConfirm([...fields]);
+                let err = props.onConfirm(fields);
+                if (err) {
+                    // была ошибка извне - нужно обновить fields
+                    setFormFields(fields);
+                }
                 setFormError(err);
             }
         }

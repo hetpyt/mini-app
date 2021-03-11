@@ -1,15 +1,16 @@
 import React, { useState, useEffect} from 'react';
-import { Panel, PanelHeader, Header, PanelHeaderBack, Group, SimpleCell, List, Counter, FixedLayout, SubnavigationBar, SubnavigationButton, IconButton, Div } from '@vkontakte/vkui';
+import { Panel, PanelHeader, Header, PanelHeaderBack, Group, SimpleCell, List, Caption, FixedLayout, SubnavigationBar, SubnavigationButton, IconButton, Div } from '@vkontakte/vkui';
 import { Icon28DoneOutline, Icon28RecentOutline, Icon28BlockOutline, Icon24Hide, Icon24Delete, Icon24Filter, Icon36ChevronLeftOutline, Icon36ChevronRightOutline } from '@vkontakte/icons';
 import { isArray } from '@vkontakte/vkjs';
 const AdminRegRequestsList = (props) => {
-	const REGREQ_LIST_PAGE_SIZE = 2;
+	const REGREQ_LIST_PAGE_SIZE = 10;
 
 	console.log("AdminRegRequestsList.props=", props);
 	const userInfo = props.app.userInfo;
 
 	const [regRequests, setregRequests] = useState([]);
 	const [listPage, setListPage] = useState(1);
+	const [totalItemsCount, setTotalItemsCount] = useState(0);
 
 	useEffect(() => {
 		props.app.restRequest(
@@ -22,7 +23,8 @@ const AdminRegRequestsList = (props) => {
 				}
 			},
             res => {
-                setregRequests(res);
+				setTotalItemsCount(res.total_count);
+                setregRequests(res.data);
             },
             err => {
                 console.log('err=', err);
@@ -78,28 +80,23 @@ const AdminRegRequestsList = (props) => {
 									</SimpleCell>
 								)
 							)}
-							<SimpleCell
-								disabled
-								before={
-									<IconButton onClick={e => {
-										if (listPage > 1) 
-											setListPage(listPage - 1);
-									}}>
-										<Icon36ChevronLeftOutline/>
-									</IconButton>
-								}
-								after={
-									<IconButton onClick={e => {
-										if (regRequests.length == REGREQ_LIST_PAGE_SIZE) 
-											setListPage(listPage + 1);
-									}}>
-										<Icon36ChevronRightOutline/>
-									</IconButton>
-
-								}
-					>
-								
-							</SimpleCell>
+							<Div style={{display: 'flex', "justify-content" : 'center', "align-items" : "center"}}>
+								<IconButton style={{height : "36px"}} onClick={e => {
+									if (listPage > 1) 
+										setListPage(listPage - 1);
+								}}>
+									<Icon36ChevronLeftOutline/>
+								</IconButton>
+								<Caption level="1" weight="regular">
+									{"Страница " + listPage.toString() + "/" + (Math.ceil(totalItemsCount / REGREQ_LIST_PAGE_SIZE)).toString()}
+								</Caption>
+								<IconButton style={{height : "36px"}} onClick={e => {
+									if (REGREQ_LIST_PAGE_SIZE * listPage < totalItemsCount) 
+										setListPage(listPage + 1);
+								}}>
+									<Icon36ChevronRightOutline/>
+								</IconButton>
+							</Div>
 						</List>
 					}
 				</Div>

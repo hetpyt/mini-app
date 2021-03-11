@@ -60,7 +60,7 @@ const App = () => {
         console.log('vkUser=', vkUser);
 
         if (vkUser) {
-            restRequest('users/privileges/get', null, res => {
+            restRequest('privileges/get', null, res => {
                 setUserInfo(res);
             });
         }
