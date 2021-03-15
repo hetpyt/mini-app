@@ -3,6 +3,10 @@ import { Panel, PanelHeader, PanelHeaderBack, Header, Group, SimpleCell, Div, Co
 
 const AdminMainMenu = (props) => {
 
+	const userInfo = props.app.userInfo;
+	const isOperator = props.app.userInfo && ['ADMIN', 'OPERATOR'].indexOf(props.app.userInfo.privileges) != -1;
+	const isAdmin = props.app.userInfo && 'ADMIN' === props.app.userInfo.privileges;
+
 	const [regReqCount, setRegReqCount] = useState(0);
 
 	useEffect(() => {
@@ -25,17 +29,17 @@ const AdminMainMenu = (props) => {
         );
 	}, []);
 
-	const userInfo = props.app.userInfo;
 
 	return (
 		<Panel id={props.id}>
 			<PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActiveView('welcomeview')}} />} >Администрирование</PanelHeader>
-			{userInfo && 'ADMIN' === userInfo.privileges &&
+			{isAdmin &&
 			<Group header={<Header mode="secondary">Меню администратора</Header>}>
+				<SimpleCell expandable onClick={e => {props.app.setActivePanel('apppermittedfunctions')}} >Управление функционалом приложения</SimpleCell>
 				<SimpleCell expandable >Полномочия пользователей</SimpleCell>
 			</Group>
 			}
-			{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
+			{isOperator &&
 			<Group header={<Header mode="secondary">Меню оператора</Header>}>
 				<SimpleCell expandable onClick={e => {props.app.setActivePanel('regrequestslist')}}  
 					after={parseInt(regReqCount) ? <Counter mode="primary">{regReqCount}</Counter> : null} 

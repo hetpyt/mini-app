@@ -31,8 +31,6 @@ const App = () => {
     const [userInfo, setUserInfo] = useState(null);
     //
     const [appPermissions, setAppPermissions] = useState(null);
-    // file data
-	const [fileData, setFileData] = useState(null);
         
 	const [popout, setPopout] = useState(spinner);
 
@@ -61,13 +59,13 @@ const App = () => {
     useEffect(() => {
         console.log('vkUser=', vkUser);
 
-        if (vkUser) {
+        if (vkUser && "welcomeview" === activeView) {
             restRequest('privileges/get', null, res => {
                 setUserInfo(res.user_privileges);
                 setAppPermissions(res.app_permissions);
             });
         }
-    }, [vkUser]);
+    }, [vkUser, activeView]);
 
     useEffect(() => {
         if (error) setActiveView('errorserviceview');

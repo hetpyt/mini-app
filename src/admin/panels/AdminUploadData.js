@@ -8,10 +8,6 @@ const AdminUploadData = (props) => {
 
 	const userInfo = props.app.userInfo;
 
-	const goBack = e => {
-		props.app.setActivePanel('mainmenu');
-	}
-
 	const confirm = fields => {
 		let file = fields[0].value;
 		console.log('file=', file);
@@ -42,15 +38,15 @@ const AdminUploadData = (props) => {
 									"Данные загружены: \n"
 									+ `клиенты : ${res.clients_count},\n`
 									+ `счетчики : ${res.meters_count}`, 
-									goBack);
+									props.app.goBack);
 								},
 								err => {
 									console.log('err=', err);
-									props.app.inform_alert("Отказ", err.message + " [" + err.code + "]", goBack);
+									props.app.inform_alert("Отказ", err.message + " [" + err.code + "]", props.app.goBack);
 								}
 							);
 						},
-						goBack);
+						props.app.goBack);
 					} else {
 						throw new Error("Не совпадают контрольные суммы.");
 					}
@@ -73,7 +69,7 @@ const AdminUploadData = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={goBack} />} >Загрузка реестра ЛС на сервер</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} />} >Загрузка реестра ЛС на сервер</PanelHeader>
 			{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
 
 				<Form 
@@ -88,7 +84,7 @@ const AdminUploadData = (props) => {
 					]}
 					readOnly={false}
 					onConfirm={confirm}
-					onCancel={goBack}
+					onCancel={props.app.goBack}
 				/>
 
 			}

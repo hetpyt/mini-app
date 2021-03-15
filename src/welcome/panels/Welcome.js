@@ -7,6 +7,7 @@ const Welcome = (props) => {
 	console.log("Welcome.props=", props);
 	const appPermIndications = props.app.appPermissions && parseInt(props.app.appPermissions.indications);
 	const appPermRegistration = props.app.appPermissions && parseInt(props.app.appPermissions.registration);
+	const userInfo = props.app.userInfo;
 	const isOperator = props.app.userInfo && ['ADMIN', 'OPERATOR'].indexOf(props.app.userInfo.privileges) != -1;
 	const isBlocked = props.app.userInfo && parseInt(props.app.userInfo.is_blocked) !== 0;
 
@@ -18,54 +19,56 @@ const Welcome = (props) => {
 				<Title align="center" level="3" weight="regular">Переданные через данное приложение показания НЕ БУДУТ ДОСТАВЛЕНЫ в управляющую организацию.</Title>
 			</Div>
 	*/}		
-			<Group
-				description={(appPermIndications && appPermRegistration) ? "" : "Некоторые функции приложения отключены администратором!"}
-			>
-				{!isBlocked &&
-					<React.Fragment>
-						<Div>
-							<Button 
-								size="l" 
-								mode="primary" 
-								stretched={true} 
-								disabled={isOperator ? false : !appPermIndications}
-								onClick={e => {props.app.setActiveView("indicationsview")}} 
-							>
-								Перейти к вводу показаний
-							</Button>
-						</Div>
-						<Div>
-							<Button 
-								size="l" 
-								mode="primary" 
-								stretched={true} 
-								disabled={isOperator ? false : !appPermRegistration}
-								onClick={e => {props.app.setActiveView("registrationview")}} 
-							>
-								Присоединить лицевой счет
-							</Button>
-						</Div>
-						{isOperator && 
+			{userInfo &&
+				<Group
+					description={(appPermIndications && appPermRegistration) ? "" : "Некоторые функции приложения отключены администратором!"}
+				>
+					{!isBlocked &&
+						<React.Fragment>
 							<Div>
-								<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActiveView("adminview")}} >
-									Администрирование
+								<Button 
+									size="l" 
+									mode={isOperator ? (appPermIndications ? "primary" : "destructive") : "primary"}
+									stretched={true} 
+									disabled={isOperator ? false : !appPermIndications}
+									onClick={e => {props.app.setActiveView("indicationsview")}} 
+								>
+									Перейти к вводу показаний
 								</Button>
 							</Div>
+							<Div>
+								<Button 
+									size="l" 
+									mode={isOperator ? (appPermRegistration ? "primary" : "destructive") : "primary"}
+									stretched={true} 
+									disabled={isOperator ? false : !appPermRegistration}
+									onClick={e => {props.app.setActiveView("registrationview")}} 
+								>
+									Присоединить лицевой счет
+								</Button>
+							</Div>
+							{isOperator && 
+								<Div>
+									<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActiveView("adminview")}} >
+										Администрирование
+									</Button>
+								</Div>
 
-						}
-					</React.Fragment>
-				}
-				<Div>
-					<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActiveView("helpview")}} >
-						Помощь
-					</Button>
-				</Div>
-				{isBlocked &&
+							}
+						</React.Fragment>
+					}
 					<Div>
-						<Caption level="1" weight="regular">Пользователь заблокирован в системе.</Caption>		
+						<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActiveView("helpview")}} >
+							Помощь
+						</Button>
 					</Div>
-				}
-			</Group>
+					{isBlocked &&
+						<Div>
+							<Caption level="1" weight="regular">Пользователь заблокирован в системе.</Caption>		
+						</Div>
+					}
+				</Group>
+			}	
 		</Panel>
 	)
 };

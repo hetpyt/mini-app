@@ -7,10 +7,6 @@ const AdminDownloadData = (props) => {
 
 	const userInfo = props.app.userInfo;
 
-	const goBack = e => {
-		props.app.setActivePanel('mainmenu');
-	}
-
 	const confirm = fields => {
 		console.log("confirm.fields=", fields);
 		if (fields[0].value && fields[1].value) {
@@ -42,20 +38,20 @@ const AdminDownloadData = (props) => {
 					let blob = new Blob([JSON.stringify(res, null, 2)], {type: 'text/plain'});
 					saveAs(blob, "indications.json");
 				} catch (e) {
-					props.app.inform_alert("Ошибка", "Не удалось сохранить принятые данные как JSON файл. Причина: " + e.message, goBack);
+					props.app.inform_alert("Ошибка", "Не удалось сохранить принятые данные как JSON файл. Причина: " + e.message, props.app.goBack);
 				}
 
 			},
 			err => {
 				console.log('err=', err);
-				props.app.inform_alert("Отказ", err.message + " [" + err.code + "]", goBack);
+				props.app.inform_alert("Отказ", err.message + " [" + err.code + "]", props.app.goBack);
 			}
 		);
 	}
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={goBack} />} >Выгрузка показаний с сервера</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} />} >Выгрузка показаний с сервера</PanelHeader>
 			{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
 				<Form
 					header={<Header mode="secondary">Выберите период выгрузки показаний</Header>}
@@ -75,7 +71,7 @@ const AdminDownloadData = (props) => {
 					]}
 					readOnly={false}
 					onConfirm={confirm}
-					onCancel={goBack}
+					onCancel={props.app.goBack}
 				/>
 			}
 		</Panel>

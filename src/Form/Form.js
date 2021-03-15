@@ -65,6 +65,10 @@ const Form = (props) => {
                         field.valid = (Boolean(field.value) && !Number.isNaN(Number(field.value)));
                         break;
 
+                    case "date":
+                        field.valid = Boolean(field.value);
+                        break;
+
                     case "text":
                         // text
                         if (field.minLength) {

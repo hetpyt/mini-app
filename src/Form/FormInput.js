@@ -10,7 +10,7 @@ const FormInput = (props) => {
             bottom={false === props.valid ? (props.errMessage ? props.errMessage : 'Заполните обязательный реквизит') : ""}
         >
             {"checkbox" == props.type 
-                ? <Checkbox name={props.name} onChange={props.onChange} >{props.top}</Checkbox>
+                ? <Checkbox name={props.name} defaultChecked={props.defaultChecked} onChange={props.onChange} >{props.top}</Checkbox>
                 : <Input type={props.type ? props.type : "text"} name={props.name} onChange={props.onChange} />
             }
         </FormItem>

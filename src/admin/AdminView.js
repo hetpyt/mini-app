@@ -7,6 +7,7 @@ import AdminRegRequestsList from './panels/AdminRegRequestsList';
 import AdminRegRequestsDetail from "./panels/AdminRegRequestsDetail";
 import AdminUploadData from './panels/AdminUploadData';
 import AdminDownloadData from './panels/AdminDownloadData';
+import AdminAppPermittedFunctions from './panels/AdminAppPermittedFunctions';
 
 import AdminModalRoot from './modals/AdminModalRoot';
 
@@ -26,7 +27,12 @@ const AdminView = (props) => {
             order : "request_date",
         }
     );
+
     const [vkAccessToken, setVkAccessToken] = useState('');
+
+    const goBack = e => {
+		setActivePanel('mainmenu');
+	}
 
 	return (
         <View id={props.id} 
@@ -42,10 +48,11 @@ const AdminView = (props) => {
             } 
         >
             <AdminMainMenu id='mainmenu' app={{setActivePanel, ...props.app}} />
+            <AdminAppPermittedFunctions id='apppermittedfunctions' app={{goBack, ...props.app}} />
             <AdminRegRequestsList id='regrequestslist' setRegRequestId={setRegRequestId} regRequestsFilters={regRequestsFilters} app={{setActivePanel, setActiveModal, ...props.app}} />
             <AdminRegRequestsDetail id='regrequestsdetail' regRequestId={regRequestId} app={{setActivePanel, ...props.app}} />
-            <AdminUploadData id='uploaddata' app={{setActivePanel, ...props.app}} />
-            <AdminDownloadData id='downloaddata' app={{setActivePanel, ...props.app}} />
+            <AdminUploadData id='uploaddata' app={{goBack, ...props.app}} />
+            <AdminDownloadData id='downloaddata' app={{goBack, ...props.app}} />
         </View>
     );
 }
