@@ -86,7 +86,7 @@ const App = () => {
                 token: getToken(),
             }
         };
-        if (json_data !== null) {
+        if (json_data) {
             options.method = 'post';
             options.json = json_data;
         }

@@ -61,7 +61,7 @@ const AdminRegRequestsDetail = (props) => {
 					console.log('res=', res);
 					props.app.inform_alert("Успех", "Заявка успешно подтверждена",
 					e => {
-						props.app.setActivePanel('regrequestslist');
+						props.setActivePanel('regrequestslist');
 					});
 				},
 				err => {
@@ -83,7 +83,7 @@ const AdminRegRequestsDetail = (props) => {
 				console.log('res=', res);
 				props.app.inform_alert("Успех", "Заявка успешно отклонена",
 				e => {
-					props.app.setActivePanel('regrequestslist');
+					props.setActivePanel('regrequestslist');
 				});
 			},
 			err => {
@@ -95,7 +95,7 @@ const AdminRegRequestsDetail = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActivePanel('regrequestslist')}} />} >Заявка на присоединение ЛС</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={e => {props.setActivePanel('regrequestslist')}} />} >Заявка на присоединение ЛС</PanelHeader>
 
 			{(userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 && activeRegRequest) &&
 
@@ -212,7 +212,7 @@ const AdminRegRequestsDetail = (props) => {
 								</Button>
 							</FormItem>
 							<FormItem>
-								<Button size="l" mode="secondary" stretched={true} onClick={e => {props.app.setActivePanel('regrequestslist')}} >
+								<Button size="l" mode="secondary" stretched={true} onClick={e => {props.setActivePanel('regrequestslist')}} >
 									Отмена
 								</Button>
 							</FormItem>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { List, RichCell, Button, Avatar, Link } from '@vkontakte/vkui';
+import { Tabs, TabsItem, List, RichCell, Button, Avatar, Link } from '@vkontakte/vkui';
 import { Icon56UserCircleOutline } from '@vkontakte/icons';
+
 
 import { isFunction } from '@vkontakte/vkjs';
 
@@ -8,34 +9,32 @@ const UsersList = (props) => {
     console.log('UsersList.props=', props);
 
     const [usersList, setUsersList] = useState(null);
-    const [listPage, setListPage] = useState(1);
-	const [totalItemsCount, setTotalItemsCount] = useState(0);
 
 	useEffect(() => {
+        console.log('UsersList.useEffect.[]');
+        let params = {
+            limits : props.limits,
+            filters : props.filters,
+            order : props.order,
+        };
 		props.app.restRequest(
-            'admin/regrequests/list',
-            {
-				...props.regRequestsFilters,
-				limits : { 
-					page_num : listPage,
-					page_len : REGREQ_LIST_PAGE_SIZE
-				}
-			},
+            'admin/users/list',
+            params,
             res => {
-				setTotalItemsCount(res.total_count);
-                setregRequests(res.data);
+				if (isFunction(props.setTotalItemsCount)) props.setTotalItemsCount(res.total_count);
+                setUsersList(res.data);
             },
             err => {
                 console.log('err=', err);
             }
         );
-	}, []);
+	}, [props.limits, props.filters, props.order]);
 
     return (
-        <div>
-            {props.usersList &&
+        <React.Fragment>
+            {usersList &&
                 <List>
-                    {props.usersList.map((user, index) => (
+                    {usersList.map((user, index) => (
                         <RichCell
                             key={index}
                             data-vk_user_id={user.vk_user_id}
@@ -53,12 +52,12 @@ const UsersList = (props) => {
                                 </React.Fragment>
                             }
                         >
-                            {user.vk_user_info ? (user.vk_user_info.last_name + " " + user.vk_user_info.last_name.first_name) : "Пользователь ID" + user.vk_user_id}
+                            {user.vk_user_info ? (user.vk_user_info.last_name + " " + user.vk_user_info.first_name) : "Пользователь ID" + user.vk_user_id}
                         </RichCell>
                     ))}
                 </List>
             }
-        </div>
+        </React.Fragment>
     );
 }
 

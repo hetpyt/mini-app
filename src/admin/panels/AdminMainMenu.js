@@ -32,20 +32,20 @@ const AdminMainMenu = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActiveView('welcomeview')}} />} >Администрирование</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={e => {props.setActiveView('welcomeview')}} />} >Администрирование</PanelHeader>
 			{isAdmin &&
 			<Group header={<Header mode="secondary">Меню администратора</Header>}>
-				<SimpleCell expandable onClick={e => {props.app.setActivePanel('apppermittedfunctions')}} >Управление функционалом приложения</SimpleCell>
-				<SimpleCell expandable >Полномочия пользователей</SimpleCell>
+				<SimpleCell expandable onClick={e => {props.setActivePanel('apppermittedfunctions')}} >Управление функционалом приложения</SimpleCell>
+				<SimpleCell expandable onClick={e => {props.setActivePanel('usersprivileges')}} >Полномочия пользователей</SimpleCell>
 			</Group>
 			}
 			{isOperator &&
 			<Group header={<Header mode="secondary">Меню оператора</Header>}>
-				<SimpleCell expandable onClick={e => {props.app.setActivePanel('regrequestslist')}}  
+				<SimpleCell expandable onClick={e => {props.setActivePanel('regrequestslist')}}  
 					after={parseInt(regReqCount) ? <Counter mode="primary">{regReqCount}</Counter> : null} 
 				>Заявки на присоединение ЛС</SimpleCell>
-				<SimpleCell expandable onClick={e => {props.app.setActivePanel('uploaddata')}} >Загрузка реестра ЛС</SimpleCell>
-				<SimpleCell expandable onClick={e => {props.app.setActivePanel('downloaddata')}} >Выгрузка принятых показаний</SimpleCell>
+				<SimpleCell expandable onClick={e => {props.setActivePanel('uploaddata')}} >Загрузка реестра ЛС</SimpleCell>
+				<SimpleCell expandable onClick={e => {props.setActivePanel('downloaddata')}} >Выгрузка принятых показаний</SimpleCell>
 			</Group>	
 			}
 		</Panel>

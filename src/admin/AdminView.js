@@ -8,7 +8,7 @@ import AdminRegRequestsDetail from "./panels/AdminRegRequestsDetail";
 import AdminUploadData from './panels/AdminUploadData';
 import AdminDownloadData from './panels/AdminDownloadData';
 import AdminAppPermittedFunctions from './panels/AdminAppPermittedFunctions';
-
+import AdminUsersPrivileges from './panels/AdminUsersPrivileges';
 import AdminModalRoot from './modals/AdminModalRoot';
 
 const AdminView = (props) => { 
@@ -47,12 +47,13 @@ const AdminView = (props) => {
                 />
             } 
         >
-            <AdminMainMenu id='mainmenu' app={{setActivePanel, ...props.app}} />
-            <AdminAppPermittedFunctions id='apppermittedfunctions' app={{goBack, ...props.app}} />
-            <AdminRegRequestsList id='regrequestslist' setRegRequestId={setRegRequestId} regRequestsFilters={regRequestsFilters} app={{setActivePanel, setActiveModal, ...props.app}} />
-            <AdminRegRequestsDetail id='regrequestsdetail' regRequestId={regRequestId} app={{setActivePanel, ...props.app}} />
-            <AdminUploadData id='uploaddata' app={{goBack, ...props.app}} />
-            <AdminDownloadData id='downloaddata' app={{goBack, ...props.app}} />
+            <AdminMainMenu id='mainmenu' setActivePanel={setActivePanel} app={props.app} />
+            <AdminAppPermittedFunctions id='apppermittedfunctions' goBack={goBack} app={props.app} />
+            <AdminUsersPrivileges id='usersprivileges' goBack={goBack} app={props.app} />
+            <AdminRegRequestsList id='regrequestslist' setRegRequestId={setRegRequestId} regRequestsFilters={regRequestsFilters} setActivePanel={setActivePanel} setActiveModal={setActiveModal} app={props.app} />
+            <AdminRegRequestsDetail id='regrequestsdetail' regRequestId={regRequestId} setActivePanel={setActivePanel} app={props.app} />
+            <AdminUploadData id='uploaddata' goBack={goBack} app={props.app} />
+            <AdminDownloadData id='downloaddata' goBack={goBack} app={props.app} />
         </View>
     );
 }

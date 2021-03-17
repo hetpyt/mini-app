@@ -44,14 +44,14 @@ const AdminDownloadData = (props) => {
 			},
 			err => {
 				console.log('err=', err);
-				props.app.inform_alert("Отказ", err.message + " [" + err.code + "]", props.app.goBack);
+				props.app.inform_alert("Отказ", err.message + " [" + err.code + "]", props.goBack);
 			}
 		);
 	}
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} />} >Выгрузка показаний с сервера</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={props.goBack} />} >Выгрузка показаний с сервера</PanelHeader>
 			{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
 				<Form
 					header={<Header mode="secondary">Выберите период выгрузки показаний</Header>}
@@ -71,7 +71,7 @@ const AdminDownloadData = (props) => {
 					]}
 					readOnly={false}
 					onConfirm={confirm}
-					onCancel={props.app.goBack}
+					onCancel={props.goBack}
 				/>
 			}
 		</Panel>

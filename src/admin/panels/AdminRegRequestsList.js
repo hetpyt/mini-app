@@ -33,12 +33,12 @@ const AdminRegRequestsList = (props) => {
 	}, [props.regRequestsFilters, listPage]);
 
 	const openFilters = e => {
-		props.app.setActiveModal('regrequestsfilters')
+		props.setActiveModal('regrequestsfilters')
 	}
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActivePanel('mainmenu')}} />} >Заявки на присоединение ЛС</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={e => {props.setActivePanel('mainmenu')}} />} >Заявки на присоединение ЛС</PanelHeader>
 
 			{userInfo && ['ADMIN', 'OPERATOR'].indexOf(userInfo.privileges) != -1 &&
 				<Div>
@@ -73,7 +73,7 @@ const AdminRegRequestsList = (props) => {
 										onClick={e => {
 											console.log('selected ' + e.currentTarget.dataset.request_id);
 											props.setRegRequestId(e.currentTarget.dataset.request_id);
-											props.app.setActivePanel('regrequestsdetail');
+											props.setActivePanel('regrequestsdetail');
 										}}
 									>
 										{'Заявка №' + item.id + ' от ' + item.request_date}

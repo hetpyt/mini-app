@@ -23,15 +23,15 @@ const AdminAppPermittedFunctions = (props) => {
                 }, {}),
                 res => {
                     console.log('res=',res);
-                    props.app.inform_alert("Успех", "Параметры доступности функций приложения установлены", props.app.goBack);
+                    props.app.inform_alert("Успех", "Параметры доступности функций приложения установлены", props.goBack);
                 },
                 err => {
                     console.log('err=', err);
-                    props.app.inform_alert("Отказ", err.message + " [" + err.code + "]", props.app.goBack);
+                    props.app.inform_alert("Отказ", err.message + " [" + err.code + "]", props.goBack);
                 }
             );
         } else {
-            props.app.goBack();
+            props.goBack();
         }
     }
 
@@ -44,14 +44,14 @@ const AdminAppPermittedFunctions = (props) => {
         	},
 			err => {
 				console.log('err=', err);
-                props.app.inform_alert("Отказ", err.message + " [" + err.code + "]", props.app.goBack);
+                props.app.inform_alert("Отказ", err.message + " [" + err.code + "]", props.goBack);
 			}
 		);
     }, []);
 
     return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={props.app.goBack} />} >Функции приложения</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={props.goBack} />} >Функции приложения</PanelHeader>
             {appPermissions &&
                 <Form
                     header={<Header mode="secondary">Выберите активные функции</Header>}
@@ -73,7 +73,7 @@ const AdminAppPermittedFunctions = (props) => {
                     ]}
                     readOnly={false}
                     onConfirm={confirm}
-                    onCancel={props.app.goBack}
+                    onCancel={props.goBack}
                 />
             }
 		</Panel>
