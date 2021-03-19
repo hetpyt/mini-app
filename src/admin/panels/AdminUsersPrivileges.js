@@ -3,18 +3,16 @@ import { Panel, PanelHeader, Group, Header, PanelHeaderBack, Tabs, TabsItem} fro
 import { Icon28DoneOutline, Icon28RecentOutline, Icon28BlockOutline, Icon24Hide, Icon24Delete, Icon24Filter, Icon36ChevronLeftOutline, Icon36ChevronRightOutline } from '@vkontakte/icons';
 import { isArray } from '@vkontakte/vkjs';
 
-import UsersList from './../components/UsersList';
-import {withPagination} from './../components/withPagination';
+import PagedUsersList from './../components/UsersList';
 
 const AdminUsersPrivileges = (props) => {
-    console.log("withPagination=", withPagination);
-    const [UsersListWithPagination, _] = useState(withPagination(UsersList));
+    const [usersListWithPagination, _] = useState(<PagedUsersList app={props.app} />);
 
     return (
 		<Panel id={props.id}>
 			<PanelHeader left={<PanelHeaderBack onClick={props.goBack} />} >Полномочия пользователей</PanelHeader>
             <Group>
-                <UsersListWithPagination app={props.app}/>
+                {usersListWithPagination}
             </Group>
         </Panel>
     )

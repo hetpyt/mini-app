@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsItem, List, RichCell, Button, Avatar, Link } from '@vkontakte/vkui';
 import { Icon56UserCircleOutline } from '@vkontakte/icons';
 
+import {withPagination} from './withPagination';
 
 import { isFunction } from '@vkontakte/vkjs';
 
@@ -61,4 +62,4 @@ const UsersList = (props) => {
     );
 }
 
-export default UsersList;
+export default withPagination(UsersList);
