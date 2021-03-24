@@ -21,6 +21,7 @@ const Form = (props) => {
     );
 
 	const on_change = (e) => {
+        console.log("Form.on_change.e=", e);
         setFormError(null);
 		let fields= formFields.map(f => ({...f}));
         fields.map((field) => {

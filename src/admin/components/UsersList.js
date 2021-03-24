@@ -16,7 +16,6 @@ const UsersList = (props) => {
         page_num : 1,
         page_len : PAGE_LEN,
     });
-    const [filters, setFilters] = useState([]);
 
 	useEffect(() => {
         console.log('UsersList.useEffect.[]');
@@ -24,10 +23,8 @@ const UsersList = (props) => {
 	}, [limits]);
 
     const updateList = () => {
-        let params = {
-            limits : limits,
-            filters : filters,
-        };
+        let params = {...props.filters};
+        params.limits = limits;
 		props.app.restRequest(
             'admin/users/list',
             params,
@@ -54,6 +51,19 @@ const UsersList = (props) => {
     const itemComponent = props => {
         const user = props.value;
 
+        const privToStr = (priv) => {
+            switch (String(priv).toUpperCase()) {
+                case "ADMIN":
+                    return "Администратор";
+                case "OPERATOR":
+                    return "Оператор";
+                case "USER":
+                    return "Пользователь";
+                default:
+                    return "НЕИЗВЕСТНО";
+            }
+        }
+
         return (
             <React.Fragment>
                 {user &&
@@ -63,9 +73,9 @@ const UsersList = (props) => {
                         disabled
                         multiline
                         before={user.vk_user_info ? <Avatar size={72} src="" /> : <Icon56UserCircleOutline size={72}/>}
-                        text={"Полномочия: " + user.privileges}
+                        text={"Полномочия: " + privToStr(user.privileges)}
                         caption={"Заблокрован: " + (Number(user.is_blocked) ? "Да" : "Нет")}
-                        after={<Link href="">профиль ВК</Link>}
+                        after={<Link href={"https://vk.com/id" + String(user.vk_user_id)}>профиль ВК</Link>}
                         actions={props.actions ? <props.actions user={user}/> : null}
                     >
                         {user.vk_user_info ? (user.vk_user_info.last_name + " " + user.vk_user_info.first_name) : "Пользователь ID" + user.vk_user_id}
@@ -81,14 +91,6 @@ const UsersList = (props) => {
 
     return (
         <React.Fragment>
-            <Tabs mode="buttons">
-                <TabsItem>Все</TabsItem>
-                <TabsItem>Админы</TabsItem>
-                <TabsItem>Операторы</TabsItem>
-                <TabsItem>Пользователи</TabsItem>
-
-            </Tabs>
-
             <PagedItemsList
                 pageNum={limits.page_num}
                 pageLen={limits.page_len}
