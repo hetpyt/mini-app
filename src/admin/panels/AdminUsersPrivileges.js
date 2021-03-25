@@ -23,7 +23,7 @@ const AdminUsersPrivileges = (props) => {
             <Group>
                 <UsersList 
                     actions={actions}                    
-                    app={app} 
+                    restRequestFunc={app.restRequest} 
                 />
             </Group>
         </Panel>
