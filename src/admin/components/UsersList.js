@@ -7,7 +7,7 @@ import PagedItemsList from './PagedItemsList';
 
 const UsersList = (props) => {
 
-    const {actions, ...rest} = props;
+    const {actions, restRequestFunc,  ...rest} = props;
 
     const itemComponent = props => {
         const user = props.value;
@@ -55,7 +55,7 @@ const UsersList = (props) => {
             pageLen={2}
             dataSource={
                 (p, d, e) => {
-                    app.restRequest(
+                    restRequestFunc(
                         'admin/users/list',
                         p, d, e);
                 }
