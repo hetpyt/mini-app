@@ -59,7 +59,7 @@ const AdminRegRequestsFilters = (props) => {
                 order : order,
             }
         );
-        props.app.setActiveModal(null);
+        props.setActiveModal(null);
     }
 
     const onPageClose = id => {

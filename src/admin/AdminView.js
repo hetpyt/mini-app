@@ -94,6 +94,7 @@ const AdminView = (props) => {
                         id="regrequestsfilters"
                         regRequestsFilters={regRequestsFilters} 
                         setRegRequestsFilters={setRegRequestsFilters} 
+                        setActiveModal={setActiveModal}
                         app={props.app}
                     />
                     <AdminFilters 
@@ -108,7 +109,7 @@ const AdminView = (props) => {
         >
             <AdminMainMenu id='mainmenu' setActivePanel={setActivePanel} app={props.app} />
             <AdminAppPermittedFunctions id='apppermittedfunctions' goBack={goBack} app={props.app} />
-            <AdminUsersPrivileges id='usersprivileges' goBack={goBack} filters={usersFilters} setActiveModal={setActiveModal} app={props.app} />
+            <AdminUsersPrivileges id='usersprivileges' goBack={goBack} setActiveModal={setActiveModal} app={props.app} />
             <AdminRegRequestsList id='regrequestslist' setRegRequestId={setRegRequestId} regRequestsFilters={regRequestsFilters} setActivePanel={setActivePanel} setActiveModal={setActiveModal} app={props.app} />
             <AdminRegRequestsDetail id='regrequestsdetail' regRequestId={regRequestId} setActivePanel={setActivePanel} app={props.app} />
             <AdminUploadData id='uploaddata' goBack={goBack} app={props.app} />

@@ -158,18 +158,20 @@ const Form = (props) => {
                     renderFormField(field)
                 )
             )}
-            <FormLayoutGroup mode="horizontal">
-                <FormItem>
-                    <Button size="l" mode="primary" stretched={true} onClick={confirm}>
-                        Отправить
-                    </Button>
-                </FormItem>
-                <FormItem>
-                    <Button size="l" mode="secondary" stretched={true} onClick={props.onCancel} >
-                        Отмена
-                    </Button>
-                </FormItem>
-            </FormLayoutGroup>
+            {!props.noButtons &&
+                <FormLayoutGroup mode="horizontal">
+                    <FormItem>
+                        <Button size="l" mode="primary" stretched={true} onClick={confirm}>
+                            Отправить
+                        </Button>
+                    </FormItem>
+                    <FormItem>
+                        <Button size="l" mode="secondary" stretched={true} onClick={props.onCancel} >
+                            Отмена
+                        </Button>
+                    </FormItem>
+                </FormLayoutGroup>
+            }
         </FormLayout>
     );
 }

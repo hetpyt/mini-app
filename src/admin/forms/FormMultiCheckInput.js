@@ -7,41 +7,34 @@ const FormMultiCheckInput = (props) => {
     //console.log('FormInput.props=', props);
     const checkers = props.checkers;
 
-    const [value, setValue] = useState(isArray(props.value) ? props.value : []);
-
-    useEffect(() => {
-        if (isFunction(props.onChange)) {
-            // return fake synthetic event
-            let tg = {
-                name : props.name,
-                type : props.type,
-                value : [...value],
-            };
-            props.onChange(
-                {
-                    currentTarget : tg,
-                    target : tg,
-                    current : tg,
-                }
-            );
-        } 
-    }, [value]);
+    const value = isArray(props.value) ? props.value : [];
 
     const isChecked = (val) => {
-        if (props.value) {
-            return props.value.indexOf(val) !== -1;
-        }
+        return value.indexOf(val) !== -1;
     }
 
     const onChangeGen = (val) => {
         return function(e) {
-            if (value) {
-                // delete val if exists
-                let newValue = value.filter(v => (v !== val));
-                // add val if checked
-                e.currentTarget.checked && newValue.push(val);
-                setValue(newValue);
-            }
+            // delete val if exists
+            let value = value.filter(v => (v !== val));
+            // add val if checked
+            e.currentTarget.checked && value.push(val);
+            if (isFunction(props.onChange)) {
+                // return fake synthetic event
+                
+                let tg = {
+                    name : props.name,
+                    type : props.type,
+                    value : [...value],
+                };
+                props.onChange(
+                    {
+                        currentTarget : tg,
+                        target : tg,
+                        current : tg,
+                    }
+                );
+            } 
         }
     }
 
