@@ -16,35 +16,32 @@ import FormMultiCheckInput from './forms/FormMultiCheckInput';
 
 const AdminView = (props) => { 
 
-    const usersListParamsMap = {
-        order : [],
-        filters : [
-            {
-                name : "privileges",
-                top : "Полномочия пользователей",
-                type : "multicheck",
-                required : false,
-                itemComponent : FormMultiCheckInput,
-                checkers : [
-                    {
-                        id : "admin",
-                        top : "Администраторы",
-                        value : "ADMIN"
-                    },
-                    {
-                        id : "operator",
-                        top : "Операторы",
-                        value : "OPERATOR"
-                    },
-                    {
-                        id : "user",
-                        top : "Пользователи",
-                        value : "USER"
-                    },
-                ]
-            },
-        ],
-    };
+    const usersListFiltersMap = [
+        {
+            name : "privileges",
+            top : "Полномочия пользователей",
+            type : "multicheck",
+            required : false,
+            itemComponent : FormMultiCheckInput,
+            checkers : [
+                {
+                    id : "admin",
+                    top : "Администраторы",
+                    value : "ADMIN"
+                },
+                {
+                    id : "operator",
+                    top : "Операторы",
+                    value : "OPERATOR"
+                },
+                {
+                    id : "user",
+                    top : "Пользователи",
+                    value : "USER"
+                },
+            ]
+        },
+    ];
 
     const [activePanel, setActivePanel] = useState('mainmenu');
     const [activeModal, setActiveModal] = useState(null);
@@ -61,16 +58,13 @@ const AdminView = (props) => {
         }
     );
 
-    const [usersListParams, setUsersListParams] = useState(
-        {
-            filters : [
-                {
-                    field : "privileges",
-                    value : ["ADMIN", "OPERATOR"]
-                }
-            ],
-            order : "vk_user_id",
-        }
+    const [usersListFilters, setUsersListFilters] = useState(
+        [
+            {
+                field : "privileges",
+                value : ["ADMIN", "OPERATOR"]
+            }
+        ]
     );
 
     const [vkAccessToken, setVkAccessToken] = useState('');
@@ -83,6 +77,12 @@ const AdminView = (props) => {
         console.log("onModalPageClose.id=", id);
         setActiveModal(null);
     };
+
+    const onFiltersSubmit = filters => {
+        console.log("onFiltersSubmit.filters=", filters);
+        setUsersListFilters(filters);
+        setActiveModal(null);
+    }
 
 	return (
         <View id={props.id} 
@@ -99,9 +99,10 @@ const AdminView = (props) => {
                     />
                     <AdminFilters 
                         id="filters"
-                        listParamsMap={usersListParamsMap}
-                        listParams={usersListParams} 
-                        setListParams={setUsersListParams}
+                        filtersMap={usersListFiltersMap}
+                        filters={usersListFilters} 
+                        setFilters={setUsersListFilters}
+                        submitFilters={onFiltersSubmit}
                         app={props.app}
                     />
                 </ModalRoot>
@@ -109,7 +110,7 @@ const AdminView = (props) => {
         >
             <AdminMainMenu id='mainmenu' setActivePanel={setActivePanel} app={props.app} />
             <AdminAppPermittedFunctions id='apppermittedfunctions' goBack={goBack} app={props.app} />
-            <AdminUsersPrivileges id='usersprivileges' goBack={goBack} setActiveModal={setActiveModal} app={props.app} />
+            <AdminUsersPrivileges id='usersprivileges' goBack={goBack} listFilters={usersListFilters} setActiveModal={setActiveModal} app={props.app} />
             <AdminRegRequestsList id='regrequestslist' setRegRequestId={setRegRequestId} regRequestsFilters={regRequestsFilters} setActivePanel={setActivePanel} setActiveModal={setActiveModal} app={props.app} />
             <AdminRegRequestsDetail id='regrequestsdetail' regRequestId={regRequestId} setActivePanel={setActivePanel} app={props.app} />
             <AdminUploadData id='uploaddata' goBack={goBack} app={props.app} />

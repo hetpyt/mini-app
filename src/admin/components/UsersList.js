@@ -7,10 +7,12 @@ import PagedItemsList from './PagedItemsList';
 
 const UsersList = (props) => {
 
-    const {actions, restRequestFunc,  ...rest} = props;
+    const {...rest} = props;
 
-    const itemComponent = props => {
+    const ItemComponent = props => {
+        console.log(ItemComponent)
         const user = props.value;
+        const ItemActions = props.actions;
 
         const privToStr = (priv) => {
             switch (String(priv).toUpperCase()) {
@@ -24,7 +26,6 @@ const UsersList = (props) => {
                     return "НЕИЗВЕСТНО";
             }
         }
-
         return (
             <React.Fragment>
                 {user &&
@@ -36,8 +37,8 @@ const UsersList = (props) => {
                         before={user.vk_user_info ? <Avatar size={72} src="" /> : <Icon56UserCircleOutline size={72}/>}
                         text={"Полномочия: " + privToStr(user.privileges)}
                         caption={"Заблокрован: " + (Number(user.is_blocked) ? "Да" : "Нет")}
-                        after={<Link href={"https://vk.com/id" + String(user.vk_user_id)}>профиль ВК</Link>}
-                        actions={actions && <actions user={user}/>}
+                        after={<Link target="_blank" href={"https://vk.com/id" + String(user.vk_user_id)}>профиль ВК</Link>}
+                        actions={ItemActions && <ItemActions user={user}/>}
                     >
                         {user.vk_user_info ? (user.vk_user_info.last_name + " " + user.vk_user_info.first_name) : "Пользователь ID" + user.vk_user_id}
                     </RichCell>
@@ -49,17 +50,8 @@ const UsersList = (props) => {
     return (
         <PagedItemsList 
             {...rest}
-            itemComponent={itemComponent}
-            listParams={null}
-            listStyle={null}
+            itemComponent={ItemComponent}
             pageLen={2}
-            dataSource={
-                (p, d, e) => {
-                    restRequestFunc(
-                        'admin/users/list',
-                        p, d, e);
-                }
-            }
         />
     );
 }

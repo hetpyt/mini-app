@@ -4,28 +4,31 @@ import { isArray, isFunction } from '@vkontakte/vkjs';
 
 const FormMultiCheckInput = (props) => { 
 
-    //console.log('FormInput.props=', props);
+    console.log('FormMultiCheckInput.props=', props);
     const checkers = props.checkers;
 
-    const value = isArray(props.value) ? props.value : [];
+    const defaultValue = props.defaultValue ? (isArray(props.defaultValue) ? props.defaultValue : [props.defaultValue]) : [];
+
+    const [value, setValue] = useState([...defaultValue]);
 
     const isChecked = (val) => {
-        return value.indexOf(val) !== -1;
+        //console.log("isChecked.val=", val);
+        return defaultValue.indexOf(val) !== -1;
     }
 
     const onChangeGen = (val) => {
         return function(e) {
             // delete val if exists
-            let value = value.filter(v => (v !== val));
+            let new_value = value.filter(v => (v !== val));
             // add val if checked
-            e.currentTarget.checked && value.push(val);
+            e.currentTarget.checked && new_value.push(val);
             if (isFunction(props.onChange)) {
                 // return fake synthetic event
                 
                 let tg = {
                     name : props.name,
                     type : props.type,
-                    value : [...value],
+                    value : new_value,
                 };
                 props.onChange(
                     {
@@ -35,6 +38,7 @@ const FormMultiCheckInput = (props) => {
                     }
                 );
             } 
+            setValue(new_value);
         }
     }
 

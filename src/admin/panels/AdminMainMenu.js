@@ -32,7 +32,7 @@ const AdminMainMenu = (props) => {
 
 	return (
 		<Panel id={props.id}>
-			<PanelHeader left={<PanelHeaderBack onClick={e => {props.setActiveView('welcomeview')}} />} >Администрирование</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={e => {props.app.setActiveView('welcomeview')}} />} >Администрирование</PanelHeader>
 			{isAdmin &&
 			<Group header={<Header mode="secondary">Меню администратора</Header>}>
 				<SimpleCell expandable onClick={e => {props.setActivePanel('apppermittedfunctions')}} >Управление функционалом приложения</SimpleCell>

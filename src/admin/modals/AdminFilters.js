@@ -7,14 +7,25 @@ import FormMultiCheckInput from './../forms/FormMultiCheckInput';
 
 const AdminFilters = (props) => {
 
-    console.log("AdminRegRequestsFilters.props=", props);
+    console.log("AdminFilters.props=", props);
 
     const filtersMap = props.filtersMap;
 
     const [filters, setFilters] = useState(props.filters);
 
     const onFormConfirm = e => {
-        //console.log("onSubmit");
+        console.log("onSubmit.filters=", filters);
+        props.submitFilters(filters.map(e=>({...e})));
+    }
+
+    const onFormChange = fields => {
+        console.log("onFormChange.f=", fields);
+        setFilters(fields.map(f => {
+            return {
+                field : f.name,
+                value : f.value,
+            }
+        }));
     }
 
     const onFormCancel = e => {
@@ -31,10 +42,30 @@ const AdminFilters = (props) => {
             <Div>
                 <Form 
                     header={null}
-                    fields={filtersMap}
+                    fields={
+                        filtersMap.map(
+                            field => (
+                                {
+                                    ...field, 
+                                    defaultValue : (
+                                        (
+                                            v => (
+                                                v === undefined ? null : v.value
+                                            )
+                                        )(props.filters.find(
+                                            filter => (
+                                                filter.field === field.name
+                                            )
+                                        ))
+                                    )
+                                }
+                            )
+                        )
+                    }
                     readOnly={false}
                     itemComponent={null}
                     noButtons
+                    _onChange={onFormChange}
                 />
             </Div>
         </ModalPage>

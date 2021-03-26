@@ -4,15 +4,19 @@ import { Panel, PanelHeader, Group, PanelHeaderBack, Button} from '@vkontakte/vk
 import UsersList from './../components/UsersList';
 
 const AdminUsersPrivileges = (props) => {
-    const {id, goBack, app} = props;
+    console.log("AdminUsersPrivileges.props=", props);
+    const {id, goBack, app, ...rest} = props;
 
-    const actions = props => (
-        <React.Fragment>
-            <Button>Полномочия</Button>
-            <Button mode="secondary">{Number(user.is_blocked) ? "Разблокировать" : "Заблокировать"}</Button>
-            <Button mode="destructive">Удалить</Button>
-        </React.Fragment>
-    );
+    const Actions = props => {
+        const user = props.user;
+        return (
+            <React.Fragment>
+                <Button>Полномочия</Button>
+                <Button mode="secondary">{Number(user.is_blocked) ? "Разблокировать" : "Заблокировать"}</Button>
+                <Button mode="destructive">Удалить</Button>
+            </React.Fragment>
+        );
+    };
 
     return (
 		<Panel id={id}>
@@ -22,8 +26,15 @@ const AdminUsersPrivileges = (props) => {
             }}>filters</Button>
             <Group>
                 <UsersList 
-                    actions={actions}                    
-                    restRequestFunc={app.restRequest} 
+                    {...rest}
+                    actions={Actions}                    
+                    dataSource={
+                        (param, onDome, onError) => {
+                            app.restRequest(
+                                'admin/users/list',
+                                param, onDome, onError);
+                        }
+                    } 
                 />
             </Group>
         </Panel>

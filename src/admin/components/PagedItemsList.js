@@ -11,17 +11,17 @@ const PagedItemsList = (props) => {
     const [totalDataLen, setTotalDataLen] = useState(0);
     const [listPageNum, setListPageNum] = useState(1);
 
-    const {itemComponent, listStyle, pageLen, dataSource, listParams, ...rest} = props;
+    const {itemComponent, listStyle, pageLen, dataSource, listFilters, ...rest} = props;
 
     if (!pageLen) pageLen = PAGE_LEN;
     
     useEffect(() => {
         updateList();
-    }, [listPageNum]);
+    }, [listPageNum, listFilters]);
 
     const updateList = () => {
         let param = {}
-        if (isObject(listParams)) param = {...listParams};
+        if (listFilters) param.filters = [...listFilters];
 
         param.limits = {
             page_num : listPageNum,
