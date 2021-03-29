@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import ky from 'ky';
 import 'url-search-params-polyfill';
+import dataSourceFactory from './classes/DataSource';
 
 import bridge from '@vkontakte/vk-bridge';
 import { AppRoot, Root, ScreenSpinner, Alert } from '@vkontakte/vkui';
@@ -75,6 +76,15 @@ const App = () => {
         return window["servertokenname_7524946"];// + appParams.get('vk_app_id')];
     }
   
+    const dataSourceClass = dataSourceFactory(
+        '/api', 
+        {
+            user_id: vkUser.id,
+            token: getToken(),
+        }
+    );
+    
+
     async function restRequest(uri, json_data = null, on_done = null, on_error = null) {
         console.log('restRequest(' + uri + ').json_data=', json_data);
         let options = {
@@ -176,6 +186,7 @@ const App = () => {
         restRequest : restRequest,
         setPopout : setPopout,
         setError : setError,
+        dataSourceClass : dataSourceClass,
         vkUser : vkUser,
         userInfo : userInfo,
         appPermissions : appPermissions,

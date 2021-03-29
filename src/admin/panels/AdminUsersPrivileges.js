@@ -28,12 +28,13 @@ const AdminUsersPrivileges = (props) => {
                 <UsersList 
                     {...rest}
                     actions={Actions}                    
-                    dataSource={
-                        (param, onDome, onError) => {
-                            app.restRequest(
-                                'admin/users/list',
-                                param, onDome, onError);
-                        }
+                    dataSourceClass={
+                        app.dataSourceClass
+                        // (param, onDome, onError) => {
+                        //     app.restRequest(
+                        //         'admin/users/list',
+                        //         param, onDome, onError);
+                        // }
                     } 
                 />
             </Group>

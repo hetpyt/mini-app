@@ -7,10 +7,11 @@ import PagedItemsList from './PagedItemsList';
 
 const UsersList = (props) => {
 
-    const {...rest} = props;
+    const {dataSourceClass, ...rest} = props;
+
+    const [dataSource, setDataSource] = useState(new dataSourceClass('admin/users/list'));
 
     const ItemComponent = props => {
-        console.log(ItemComponent)
         const user = props.value;
         const ItemActions = props.actions;
 
