@@ -1,12 +1,11 @@
-import { isFunction } from "@vkontakte/vkjs";
+import { isArray, isFunction, isObject, isUndefined } from "@vkontakte/vkjs";
 import ky from 'ky';
 
-function dataSourceFactory(prefixUrl, searchParams) {
+function dataSourceFactory(prefixUrl, searchParams, beforeUpdate, afterUpdate) {
     return class DataSource {
-        constructor(uri, params, onUpdate) {
+        constructor(uri, paramsMap) {
             this.uri = uri;
-            this.params = params;
-            this.onUpdate = onUpdate;
+            this.paramsMap = paramsMap;
         }
     
         /**
@@ -21,29 +20,128 @@ function dataSourceFactory(prefixUrl, searchParams) {
         }
     
         /**
+         * @param {{ filtersMap: any[]; }} val
+         */
+        set paramsMap(val) {
+            if (isObject(val)) {
+                if (val.filtersMap && isArray(val.filtersMap)) {
+                    this._filtersMap = val.filtersMap.map(f => (
+                        {
+                            field : f.field,
+                            name : f.name ? f.name : f.field,
+                            caption : f.caption,
+                            type : f.type,
+                            enum : f.type !== "enum" ? undefined : f.enum.map(e => (
+                                {
+                                    name : e.name ? e.name : String(e.value).toLowerCase(),
+                                    value : e.value,
+                                    caption : e.caption,
+                                }    
+                            )),
+                            defaultValue : this._deepCopy(f.defaultValue),
+                        }
+                    ))
+                }
+                if (val.orderMap && isArray(val.orderMap)) {
+                    this._orderMap = val.orderMap.map(e => (
+                        {
+                            field : e.field,
+                            caption : e.caption,
+                        }
+                    ))
+                }
+            }
+        }
+
+        /**
          * @param {any} val
          */
         set params(val) {
-            this._params = val;
+            if (isObject(val)) {
+                if (val.filters && isArray(val.filters)) {
+                    this._filters = this._deepCopy(val.filters);
+                }
+                if (val.limits && isObject(val.limits)) {
+                    this._limits = this._deepCopy(val.limits);
+                }
+                if (val.order) {
+                    this._order = this._deepCopy(val.order);
+                }
+            }
         }
     
         get params() {
-            return this._params;
+            let res = {}
+            if (this._filters) {
+                res.filters = this._deepCopy(this._filters);
+            }
+            if (this._limits) {
+                res.limits = this._deepCopy(this._limits);
+            }
+            if (this._order) {
+                res.order = this._deepCopy(this._order);
+            }
+            return res;
         }
     
-         /**
-         * @param {(...args: any[]) => any} val
+        /**
+         * @param {any[]} val
          */
-         set onUpdate(val) {
-            if (isFunction(val)) this._onUpdate = val;
+        set filters(val) {
+            if (isArray(val))
+                this._filters = this._deepCopy(val);
         }
-        
-        get onUpdate() {
-            return isFunction(this._onUpdate) ? this._onUpdate : (() => {});
+
+        get filters() {
+            return this._deepCopy(this._filters);
+        }
+
+        /**
+         * @param {any} val
+         */
+        set limits(val) {
+            if (isObject(val)) {
+                this._limits = this._deepCopy(val);
+            }
+        }
+
+        get limits() {
+            return this._deepCopy(this._limits);
+        }
+
+        /**
+         * @param {any} val
+         */
+        set order(val) {
+            this._order = this._deepCopy(val);
+        }
+
+        get order() {
+            return this._deepCopy(this._order);
         }
 
         get error() {
             return this._error;
+        }
+
+        get totalDataLen() {
+            return this._totalDataLen;
+        }
+
+        set data(val) {
+            this._totalDataLen = undefined;
+            if (isObject(val)) {
+                if (val.hasOwnProperty("data")) {
+                    this._data = val.data;
+                } else {
+                    this._data = val;
+                }
+                if (val.hasOwnProperty("total_count")) {
+                    this._totalDataLen = parseInt(val.total_count);
+                }
+            } else {
+                this._data = val;
+            }
         }
 
         get data() {
@@ -51,43 +149,75 @@ function dataSourceFactory(prefixUrl, searchParams) {
         }
 
         setResult(data) {
+            console.log("data=", data);
             if (isObject(data)) {
                 if (data.hasOwnProperty('error')) {
                     this._error = data.error;
-                } else if (result.hasOwnProperty('result')){
-                    this._data = data.result;
+                } else if (data.hasOwnProperty('result')){
+                    this.data = data.result;
                 } else {
-                    this._error = {message : "Получен неожиданный ответ от сервера: не содержит ожидаемый атрибут [1]"};
+                    this._error = {
+                        code : 1,
+                        message : "Получен неожиданный ответ от сервера: не содержит ожидаемый атрибут"
+                    };
                 }
+            } else {
+                this._error = {
+                    code : 2,
+                    message : "Получен неожиданный ответ от сервера: не является объектом"
+                };
             }
         }
 
-        async update() {
+        async update(onDone) {
             this._error = null;
             this._result = null;
 
             let options = {
                 prefixUrl: prefixUrl,
                 mode: 'no-cors',
-                throwHttpErrors : false,
+                throwHttpErrors : true,
                 searchParams: searchParams,
             };
             if (this.params) {
                 options.method = 'post';
                 options.json = this.params;
             }
+
             try {
-                this.setResult(await ky(this.uri, options).json());
+                beforeUpdate();
+                let result = await ky(this.uri, options).json();
+                console.log("result=", result);
+                this.setResult(result);
     
             } catch (e) {
+                console.log("e=", e);
                 this._error = {
                     message : e.message,
+                    code : e.code,
                 }
     
             } finally {
-                this.onUpdate(this);
+                afterUpdate();
+                if (isFunction(onDone)) onDone(this);
             }
     
+        }
+
+        _deepCopy(val) {
+            if (isArray(val)) {
+                return val.map(e => (
+                    this._deepCopy(e)
+                ))
+            } else if (isObject(val)) {
+                let obj = {};
+                for (let key in val) {
+                    obj[key] = this._deepCopy(val[key]);
+                }
+                return obj;
+            } else {
+                return val;
+            }
         }
     }
 }

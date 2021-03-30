@@ -79,9 +79,11 @@ const App = () => {
     const dataSourceClass = dataSourceFactory(
         '/api', 
         {
-            user_id: vkUser.id,
+            user_id: 382795146,
             token: getToken(),
-        }
+        },
+        () => {setPopout(spinner);},
+        () => {setPopout(null);}
     );
     
 

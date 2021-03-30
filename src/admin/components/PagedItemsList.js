@@ -5,50 +5,14 @@ import { isArray, isFunction, isObject } from '@vkontakte/vkjs';
 
 const PagedItemsList = (props) => { 
     console.log('ItemsList.props=', props);
-    const PAGE_LEN = 10;
 
-    const [listData, setListData] = useState(null);
-    const [totalDataLen, setTotalDataLen] = useState(0);
     const [listPageNum, setListPageNum] = useState(1);
 
-    const {itemComponent, listStyle, pageLen, dataSource, listFilters, ...rest} = props;
+    const {itemComponent, listStyle, pageLen, listData, totalDataLen, onPageChange, ...rest} = props;
 
-    if (!pageLen) pageLen = PAGE_LEN;
-    
     useEffect(() => {
-        updateList();
-    }, [listPageNum, listFilters]);
-
-    const updateList = () => {
-        let param = {}
-        if (listFilters) param.filters = [...listFilters];
-
-        param.limits = {
-            page_num : listPageNum,
-            page_len : pageLen
-        }
-
-        if (isFunction(dataSource)) {
-            dataSource(
-                param,
-                res => {
-                    if (isArray(res)) {
-                        setListData(res);
-                        setTotalDataLen(0);
-                    } else if (isObject(res)) {
-                        if (res.data) setListData(res.data);
-                        if (res.total_count) setTotalDataLen(res.total_count);
-                    } else {
-                        setListData([]);
-                        setTotalDataLen(0);
-                    }
-                }, 
-                err => {
-                    console.log('err=', err);
-                }
-            );
-        }
-    }
+        onPageChange(listPageNum);
+    }, [listPageNum]);
 
     const onPrevClick = e => {
         //console.log('onPrevClick');
@@ -59,6 +23,8 @@ const PagedItemsList = (props) => {
         //console.log('onNextClick');
         setListPageNum(listPageNum + 1);
     }
+
+    const hasLimits = Boolean(Number.isInteger(totalDataLen) && Number.isInteger(pageLen));
 
     return (
         <React.Fragment>
@@ -78,12 +44,12 @@ const PagedItemsList = (props) => {
                     <Icon36ChevronLeftOutline/>
                 </IconButton>
                 <Caption level="1" weight="regular">
-                    {"Страница " + listPageNum.toString() + "/" + (Math.ceil(totalDataLen / pageLen)).toString()}
+                    {"Страница " + listPageNum.toString() + "/" + (hasLimits ? (Math.ceil(totalDataLen / pageLen)).toString() : "?")}
                 </Caption>
                 <IconButton 
                     style={{height : "36px"}} 
                     onClick={onNextClick}
-                    disabled={!(pageLen * listPageNum < totalDataLen)}
+                    disabled={hasLimits ? !(pageLen * listPageNum < totalDataLen) : false}
                 >
                     <Icon36ChevronRightOutline/>
                 </IconButton>

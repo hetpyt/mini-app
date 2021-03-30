@@ -7,9 +7,59 @@ import PagedItemsList from './PagedItemsList';
 
 const UsersList = (props) => {
 
+    const PAGE_LEN = 2;
+
+    const ParamsMap = {
+        filtersMap : [
+            {
+                field : "privileges",
+                caption : "Полномочия пользователей",
+                type : "enum",
+                enum : [
+                    {
+                        name : "admin",
+                        caption : "Администраторы",
+                        value : "ADMIN"
+                    },
+                    {
+                        name : "operator",
+                        caption : "Операторы",
+                        value : "OPERATOR"
+                    },
+                    {
+                        name : "user",
+                        caption : "Пользователи",
+                        value : "USER"
+                    },
+                ]
+            },
+        ],
+        orderMap : [
+            {
+                field : "vk_user_id",
+                caption : "ИД пользователя"
+            }
+        ]
+    };
+
     const {dataSourceClass, ...rest} = props;
 
-    const [dataSource, setDataSource] = useState(new dataSourceClass('admin/users/list'));
+    const [dataSource, _] = useState(new dataSourceClass('admin/users/list', ParamsMap));
+    //const [listData, setListData] = useState(null);
+
+    const onDSUpdate = ds => {
+        console.log("onDSUpdate.ds=", ds);
+        //setListData(ds.data);
+    }
+
+    const onPageChange = (pageNum) => {
+        console.log("onPageChange.page_num=", pageNum);
+        dataSource.limits = {
+            page_num : pageNum,
+            page_len : PAGE_LEN,
+        }
+        dataSource.update(onDSUpdate);
+    }
 
     const ItemComponent = props => {
         const user = props.value;
@@ -49,11 +99,18 @@ const UsersList = (props) => {
     };
 
     return (
-        <PagedItemsList 
-            {...rest}
-            itemComponent={ItemComponent}
-            pageLen={2}
-        />
+        <React.Fragment>
+            {dataSource &&
+                <PagedItemsList 
+                    {...rest}
+                    itemComponent={ItemComponent}
+                    pageLen={PAGE_LEN}
+                    listData={dataSource.data}
+                    totalDataLen={dataSource.totalDataLen}
+                    onPageChange={onPageChange}
+                />
+            }
+        </React.Fragment>
     );
 }
 
