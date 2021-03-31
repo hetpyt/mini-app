@@ -42,14 +42,12 @@ const UsersList = (props) => {
         ]
     };
 
-    const {dataSourceClass, ...rest} = props;
+    const {DataSource, ...rest} = props;
 
-    const [dataSource, _] = useState(new dataSourceClass('admin/users/list', ParamsMap));
-    //const [listData, setListData] = useState(null);
+    const [dataSource, _] = useState(new DataSource('admin/users/list', ParamsMap));
 
     const onDSUpdate = ds => {
         console.log("onDSUpdate.ds=", ds);
-        //setListData(ds.data);
     }
 
     const onPageChange = (pageNum) => {

@@ -25,6 +25,8 @@ const App = () => {
 
     const [activeView, setActiveView] = useState('welcomeview');
 
+    const [DataSource, setDataSource] = useState(null);
+
     const [error, setError] = useState(null);
     // информация о пользователе ВК
     const [vkUser, setVkUser] = useState(null);
@@ -60,6 +62,18 @@ const App = () => {
     useEffect(() => {
         console.log('vkUser=', vkUser);
 
+        if (vkUser) {
+            setDataSource(() => (dataSourceFactory(
+                '/api', 
+                {
+                    user_id: vkUser.id,
+                    token: getToken(),
+                },
+                () => {setPopout(spinner);},
+                () => {setPopout(null);}
+            )));
+        }
+
         if (vkUser && "welcomeview" === activeView) {
             restRequest('privileges/get', null, res => {
                 setUserInfo(res.user_privileges);
@@ -76,17 +90,6 @@ const App = () => {
         return window["servertokenname_7524946"];// + appParams.get('vk_app_id')];
     }
   
-    const dataSourceClass = dataSourceFactory(
-        '/api', 
-        {
-            user_id: 382795146,
-            token: getToken(),
-        },
-        () => {setPopout(spinner);},
-        () => {setPopout(null);}
-    );
-    
-
     async function restRequest(uri, json_data = null, on_done = null, on_error = null) {
         console.log('restRequest(' + uri + ').json_data=', json_data);
         let options = {
@@ -188,7 +191,7 @@ const App = () => {
         restRequest : restRequest,
         setPopout : setPopout,
         setError : setError,
-        dataSourceClass : dataSourceClass,
+        DataSource : DataSource,
         vkUser : vkUser,
         userInfo : userInfo,
         appPermissions : appPermissions,
