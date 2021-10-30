@@ -21,13 +21,15 @@ const AdminUsersPrivileges = (props) => {
     return (
 		<Panel id={id}>
 			<PanelHeader left={<PanelHeaderBack onClick={goBack} />} >Полномочия пользователей</PanelHeader>
+{/*           
             <Button onClick={e => {
                 props.setActiveModal('filters');
             }}>filters</Button>
+*/}
             <Group>
                 <UsersList 
                     {...rest}
-                    actions={Actions}                    
+                    actions={null}                    
                     DataSource={app.DataSource} 
                 />
             </Group>
