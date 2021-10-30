@@ -36,7 +36,7 @@ const AdminMainMenu = (props) => {
 			{isAdmin &&
 			<Group header={<Header mode="secondary">Меню администратора</Header>}>
 				<SimpleCell expandable onClick={e => {props.setActivePanel('apppermittedfunctions')}} >Управление функционалом приложения</SimpleCell>
-				<SimpleCell expandable onClick={e => {props.setActivePanel('usersprivileges')}} >Полномочия пользователей</SimpleCell>
+				<SimpleCell expandable onClick={e => {props.setActivePanel('usersprivileges')}} >Пользователи</SimpleCell>
 			</Group>
 			}
 			{isOperator &&

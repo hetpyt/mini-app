@@ -58,7 +58,7 @@ const Welcome = (props) => {
 						</React.Fragment>
 					}
 					<Div>
-						<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActiveView("helpview")}} >
+						<Button size="l" mode="primary" stretched={true} onClick={e => {props.app.setActivePanel("help")}} >
 							Помощь
 						</Button>
 					</Div>

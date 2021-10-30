@@ -20,7 +20,7 @@ const AdminUsersPrivileges = (props) => {
 
     return (
 		<Panel id={id}>
-			<PanelHeader left={<PanelHeaderBack onClick={goBack} />} >Полномочия пользователей</PanelHeader>
+			<PanelHeader left={<PanelHeaderBack onClick={goBack} />} >Пользователи</PanelHeader>
 {/*           
             <Button onClick={e => {
                 props.setActiveModal('filters');

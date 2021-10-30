@@ -39,23 +39,25 @@ const App = () => {
 
     // эффект при создании компонента апп
 	useEffect(() => {
-		// bridge.subscribe(({ detail: { type, data }}) => {
-		// 	if (type === 'VKWebAppUpdateConfig') {
-		// 		const schemeAttribute = document.createAttribute('scheme');
-		// 		schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
-		// 		document.body.attributes.setNamedItem(schemeAttribute);
-		// 	    } 
-        //     }   
-        // );
-        // // получение информации о текущем пользователе запустившем апп
-        // const vkuser = await bridge.send('VKWebAppGetUserInfo');
-        const vkuser = {
-            id : 382795146,
-            first_name : "Roman",
-            last_name : "S",
-        };
-        setVkUser(vkuser);
-        console.log('vkuser=', vkuser);
+		bridge.subscribe(({ detail: { type, data }}) => {
+			if (type === 'VKWebAppUpdateConfig') {
+				const schemeAttribute = document.createAttribute('scheme');
+				schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
+				document.body.attributes.setNamedItem(schemeAttribute);
+			    } 
+            }   
+        );
+        // получение информации о текущем пользователе запустившем апп
+        (async function() {
+            const vkuser =  await bridge.send('VKWebAppGetUserInfo');
+            setVkUser(vkuser);
+            console.log('vkuser=', vkuser);
+        })();
+        // const vkuser = {
+        //     id : 382795146,
+        //     first_name : "Roman",
+        //     last_name : "S",
+        // };s
 
 	}, []);
 
